@@ -7,586 +7,136 @@
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --surface2: #181818;
-    --border: #222;
-    --fire1: #FF4500;
-    --fire2: #FF8C00;
-    --fire3: #FFD700;
-    --fire4: #FFF8DC;
-    --green: #00FF88;
-    --muted: #555;
-    --text: #e8e8e8;
-    --sub: #888;
+    --bg:#0a0a0a;--surface:#111;--surface2:#181818;--border:#222;
+    --fire1:#FF4500;--fire2:#FF8C00;--fire3:#FFD700;--fire4:#FFF8DC;
+    --green:#00FF88;--blue:#00BFFF;--muted:#555;--text:#e8e8e8;--sub:#888;
   }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;overflow-x:hidden;min-height:100vh;}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+  .fire-bg{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .fire-bg::before{content:'';position:absolute;bottom:-50%;left:-20%;width:140%;height:80%;
+    background:radial-gradient(ellipse at center bottom,rgba(255,69,0,0.12) 0%,rgba(255,140,0,0.06) 30%,transparent 70%);
+    animation:breathe 4s ease-in-out infinite;}
+  @keyframes breathe{0%,100%{transform:scale(1) translateY(0);opacity:.8;}50%{transform:scale(1.05) translateY(-20px);opacity:1;}}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    overflow-x: hidden;
-    min-height: 100vh;
-  }
+  .ember{position:fixed;border-radius:50%;background:var(--fire2);pointer-events:none;z-index:1;animation:ember-rise linear infinite;}
+  @keyframes ember-rise{0%{opacity:0;transform:translateY(0) translateX(0) scale(1);}10%{opacity:1;}80%{opacity:.6;}100%{opacity:0;transform:translateY(-100vh) translateX(var(--drift)) scale(.3);}}
 
-  /* Animated fire background */
-  .fire-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  .fire-bg::before {
-    content: '';
-    position: absolute;
-    bottom: -50%;
-    left: -20%;
-    width: 140%;
-    height: 80%;
-    background: radial-gradient(ellipse at center bottom, 
-      rgba(255,69,0,0.12) 0%, 
-      rgba(255,140,0,0.06) 30%, 
-      transparent 70%);
-    animation: breathe 4s ease-in-out infinite;
-  }
-  @keyframes breathe {
-    0%,100% { transform: scale(1) translateY(0); opacity: 0.8; }
-    50% { transform: scale(1.05) translateY(-20px); opacity: 1; }
-  }
+  /* HEADER */
+  header{position:relative;z-index:10;text-align:center;padding:60px 20px 50px;border-bottom:1px solid var(--border);background:linear-gradient(180deg,#0f0800 0%,transparent 100%);}
+  .eyebrow{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:4px;color:var(--fire2);text-transform:uppercase;margin-bottom:20px;}
+  h1{font-family:'Black Ops One',cursive;font-size:clamp(52px,11vw,130px);line-height:.9;letter-spacing:-2px;
+    background:linear-gradient(135deg,var(--fire1) 0%,var(--fire2) 40%,var(--fire3) 70%,var(--fire4) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+    filter:drop-shadow(0 0 30px rgba(255,69,0,.4));animation:flicker 3s ease-in-out infinite;}
+  @keyframes flicker{0%,100%{filter:drop-shadow(0 0 30px rgba(255,69,0,.4));}50%{filter:drop-shadow(0 0 50px rgba(255,140,0,.7));}}
+  .dotcom{font-family:'Bebas Neue',cursive;font-size:clamp(18px,3vw,36px);color:var(--muted);letter-spacing:4px;display:block;margin-top:8px;-webkit-text-fill-color:var(--muted);}
+  .tagline{margin:20px auto 0;font-size:16px;color:var(--sub);font-style:italic;max-width:500px;line-height:1.6;}
+  .live-ticker{display:inline-flex;align-items:center;gap:10px;background:rgba(255,69,0,.1);border:1px solid rgba(255,69,0,.3);padding:8px 20px;margin-top:24px;font-family:'DM Mono',monospace;font-size:13px;color:var(--fire2);}
+  .live-dot{width:8px;height:8px;background:var(--fire1);border-radius:50%;animation:blink 1s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
 
-  /* Floating embers */
-  .ember {
-    position: fixed;
-    width: 3px;
-    height: 3px;
-    border-radius: 50%;
-    background: var(--fire2);
-    pointer-events: none;
-    z-index: 1;
-    animation: ember-rise linear infinite;
-  }
-  @keyframes ember-rise {
-    0% { opacity: 0; transform: translateY(0) translateX(0) scale(1); }
-    10% { opacity: 1; }
-    80% { opacity: 0.6; }
-    100% { opacity: 0; transform: translateY(-100vh) translateX(var(--drift)) scale(0.3); }
-  }
+  /* LAYOUT */
+  main{position:relative;z-index:10;max-width:1200px;margin:0 auto;padding:40px 20px 100px;display:grid;grid-template-columns:1fr 380px;gap:40px;align-items:start;}
+  @media(max-width:860px){main{grid-template-columns:1fr;}}
 
-  /* Header */
-  header {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-    padding: 60px 20px 50px;
-    border-bottom: 1px solid var(--border);
-    background: linear-gradient(180deg, #0f0800 0%, transparent 100%);
-  }
+  /* STATS */
+  .stats-bar{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);}
+  .stat{background:var(--surface);padding:20px 24px;text-align:center;}
+  .stat-num{font-family:'Black Ops One',cursive;font-size:26px;background:linear-gradient(135deg,var(--fire1),var(--fire3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;display:block;}
+  .stat-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:4px;display:block;}
 
-  .site-eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: var(--fire2);
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    opacity: 0.8;
-  }
+  /* TABS */
+  .lb-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:0;}
+  .lb-tab{padding:12px 22px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;color:var(--muted);border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;transition:all .2s;}
+  .lb-tab:hover{color:var(--fire2);}
+  .lb-tab.active{color:var(--fire3);border-bottom-color:var(--fire3);}
+  .lb-panel{display:none;padding-top:20px;}
+  .lb-panel.active{display:block;}
+  .lb-desc{font-size:13px;color:var(--sub);font-style:italic;margin-bottom:18px;line-height:1.5;}
 
-  h1 {
-    font-family: 'Black Ops One', cursive;
-    font-size: clamp(52px, 11vw, 130px);
-    line-height: 0.9;
-    letter-spacing: -2px;
-    background: linear-gradient(135deg, var(--fire1) 0%, var(--fire2) 40%, var(--fire3) 70%, var(--fire4) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    filter: drop-shadow(0 0 30px rgba(255,69,0,0.4));
-    animation: flicker 3s ease-in-out infinite;
-  }
-  @keyframes flicker {
-    0%,100% { filter: drop-shadow(0 0 30px rgba(255,69,0,0.4)); }
-    50% { filter: drop-shadow(0 0 50px rgba(255,140,0,0.7)); }
-  }
+  /* LEADERBOARD */
+  .leaderboard{display:flex;flex-direction:column;gap:3px;}
+  .lb-entry{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;background:var(--surface);border:1px solid var(--border);padding:14px 18px;transition:all .2s;animation:slide-in .4s ease both;}
+  @keyframes slide-in{from{opacity:0;transform:translateX(-16px);}to{opacity:1;transform:translateX(0);}}
+  .lb-entry:hover{border-color:var(--fire1);background:var(--surface2);}
+  .lb-entry.rank-1{border-color:var(--fire3);border-left:4px solid var(--fire3);background:linear-gradient(90deg,rgba(255,215,0,.06),transparent);}
+  .lb-entry.rank-2{border-left:4px solid #C0C0C0;}
+  .lb-entry.rank-3{border-left:4px solid #CD7F32;}
+  .lb-entry.single.rank-1{border-color:var(--blue);border-left-color:var(--blue);background:linear-gradient(90deg,rgba(0,191,255,.06),transparent);}
+  .lb-entry.is-new{animation:new-entry .6s ease both;}
+  @keyframes new-entry{0%{opacity:0;transform:scale(.96);background:rgba(0,255,136,.08);}100%{opacity:1;transform:scale(1);}}
+  .lb-rank{font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);text-align:center;}
+  .lb-rank.gold{color:var(--fire3);font-size:22px;}
+  .lb-rank.silver{color:#C0C0C0;font-size:20px;}
+  .lb-rank.bronze{color:#CD7F32;font-size:18px;}
+  .lb-name{font-size:15px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .badge{font-size:10px;background:rgba(255,69,0,.15);border:1px solid rgba(255,69,0,.3);color:var(--fire2);padding:2px 8px;font-family:'DM Mono',monospace;white-space:nowrap;}
+  .badge.blue{background:rgba(0,191,255,.1);border-color:rgba(0,191,255,.3);color:var(--blue);}
+  .lb-meta{font-size:12px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace;}
+  .lb-amount{text-align:right;}
+  .lb-amount .amt{font-family:'Black Ops One',cursive;font-size:22px;background:linear-gradient(135deg,var(--fire1),var(--fire3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;line-height:1;}
+  .lb-amount .amt.blue{background:linear-gradient(135deg,var(--blue),#88eeff);-webkit-background-clip:text;background-clip:text;}
+  .lb-amount .cur{font-size:11px;color:var(--muted);display:block;margin-top:2px;font-family:'DM Mono',monospace;}
+  .king-bar{height:3px;background:linear-gradient(90deg,var(--fire1),var(--fire2),var(--fire3),var(--fire2),var(--fire1));background-size:200% 100%;animation:shimmer 2s linear infinite;}
+  .king-bar.blue{background:linear-gradient(90deg,var(--blue),#88eeff,var(--blue));background-size:200% 100%;}
+  @keyframes shimmer{0%{background-position:0%;}100%{background-position:200%;}}
+  .empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+  .empty-state .ei{font-size:48px;margin-bottom:16px;display:block;}
+  .empty-state p{font-style:italic;font-size:14px;}
+  .hos-section{margin-top:32px;}
+  .hos-section h3{font-family:'Bebas Neue',cursive;font-size:20px;letter-spacing:2px;color:var(--muted);margin-bottom:12px;}
+  .hos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;}
+  .hos-card{background:var(--surface2);border:1px solid var(--border);padding:12px;text-align:center;font-size:13px;}
+  .hos-card .hcn{color:var(--text);font-weight:600;display:block;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hos-card .hca{color:var(--fire2);font-family:'DM Mono',monospace;font-size:12px;}
 
-  .h1-dot-com {
-    font-family: 'Bebas Neue', cursive;
-    font-size: clamp(18px, 3vw, 36px);
-    color: var(--muted);
-    letter-spacing: 4px;
-    display: block;
-    margin-top: 8px;
-    -webkit-text-fill-color: var(--muted);
-  }
+  /* DONATE PANEL */
+  .donate-panel{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--fire1);padding:30px;position:sticky;top:20px;}
+  .donate-panel h2{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:2px;color:var(--fire3);margin-bottom:6px;}
+  .dp-sub{font-size:13px;color:var(--sub);font-style:italic;margin-bottom:20px;line-height:1.5;}
+  .amt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px;}
+  .amt-btn{padding:11px 6px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:13px;cursor:pointer;transition:all .15s;text-align:center;}
+  .amt-btn:hover,.amt-btn.sel{background:var(--fire1);border-color:var(--fire1);color:#fff;}
+  .amt-btn .al{display:block;font-size:9px;color:var(--muted);margin-top:2px;font-family:'Inter',sans-serif;font-style:italic;}
+  .amt-btn:hover .al,.amt-btn.sel .al{color:rgba(255,255,255,.65);}
+  .fw{margin-bottom:14px;}
+  .fw label{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--sub);text-transform:uppercase;margin-bottom:7px;}
+  .fw input,.fw select{width:100%;background:var(--surface2);border:1px solid var(--border);border-bottom:2px solid var(--fire1);color:var(--text);padding:10px 12px;font-family:'Inter',sans-serif;font-size:15px;outline:none;transition:border-color .2s;appearance:none;}
+  .fw input:focus,.fw select:focus{border-bottom-color:var(--fire3);}
+  .roast{background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--fire1);padding:14px 16px;margin-bottom:16px;font-size:13px;color:var(--sub);font-style:italic;line-height:1.6;min-height:58px;transition:all .3s;}
+  .roast strong{color:var(--fire2);font-style:normal;}
+  .pf-notice{background:rgba(0,191,255,.06);border:1px solid rgba(0,191,255,.2);padding:12px 14px;margin-bottom:16px;font-size:12px;color:#5ad4f5;line-height:1.6;font-family:'DM Mono',monospace;}
+  .pf-notice strong{color:var(--blue);display:block;margin-bottom:4px;font-size:11px;letter-spacing:1px;}
+  .burn-btn{width:100%;padding:17px;background:linear-gradient(135deg,var(--fire1),var(--fire2));color:#fff;border:none;font-family:'Black Ops One',cursive;font-size:19px;letter-spacing:2px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+  .burn-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--fire2),var(--fire3));opacity:0;transition:opacity .2s;}
+  .burn-btn:hover::after{opacity:1;}
+  .burn-btn span{position:relative;z-index:1;}
+  .burn-btn:active{transform:scale(.98);}
+  .disclaimer{margin-top:10px;font-size:11px;color:var(--muted);text-align:center;font-style:italic;line-height:1.5;}
 
-  .tagline {
-    margin-top: 20px;
-    font-size: 16px;
-    color: var(--sub);
-    font-style: italic;
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto;
-    line-height: 1.6;
-  }
+  /* CONFIG PANEL */
+  .cfg-panel{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--fire1);z-index:500;width:320px;font-size:13px;}
+  .cfg-toggle{background:var(--fire1);color:#fff;border:none;padding:10px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;width:100%;text-align:left;}
+  .cfg-body{display:none;padding:16px;}
+  .cfg-body.open{display:block;}
+  .cfg-field{margin-bottom:12px;}
+  .cfg-field label{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--sub);text-transform:uppercase;margin-bottom:5px;}
+  .cfg-field input{width:100%;background:#0a0a0a;border:1px solid var(--border);color:var(--text);padding:7px 10px;font-family:'DM Mono',monospace;font-size:12px;outline:none;}
+  .cfg-save{width:100%;padding:9px;background:var(--fire1);color:#fff;border:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;margin-top:4px;}
+  .cfg-save:hover{background:var(--fire2);}
+  .cfg-note{font-size:11px;color:var(--muted);font-style:italic;margin-top:10px;line-height:1.5;}
 
-  .live-ticker {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    background: rgba(255,69,0,0.1);
-    border: 1px solid rgba(255,69,0,0.3);
-    padding: 8px 20px;
-    margin-top: 24px;
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--fire2);
-  }
-  .live-dot {
-    width: 8px; height: 8px;
-    background: var(--fire1);
-    border-radius: 50%;
-    animation: blink 1s ease-in-out infinite;
-  }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  /* TOAST */
+  .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1px solid var(--fire1);border-left:4px solid var(--fire1);padding:16px 24px;font-size:14px;color:var(--text);z-index:1000;transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:420px;width:90%;text-align:center;}
+  .toast.show{transform:translateX(-50%) translateY(0);}
+  .toast strong{color:var(--fire3);display:block;font-size:16px;margin-bottom:4px;}
+  .toast.ok{border-color:var(--green);}
+  .toast.ok strong{color:var(--green);}
 
-  /* Main layout */
-  main {
-    position: relative;
-    z-index: 10;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 20px 100px;
-    display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 40px;
-    align-items: start;
-  }
-  @media(max-width:820px) {
-    main { grid-template-columns: 1fr; }
-  }
-
-  /* Donation panel */
-  .donate-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: 3px solid var(--fire1);
-    padding: 32px;
-    position: sticky;
-    top: 20px;
-  }
-
-  .donate-panel h2 {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 28px;
-    letter-spacing: 2px;
-    color: var(--fire3);
-    margin-bottom: 6px;
-  }
-  .donate-panel .sub {
-    font-size: 13px;
-    color: var(--sub);
-    font-style: italic;
-    margin-bottom: 24px;
-    line-height: 1.5;
-  }
-
-  .amount-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .amount-btn {
-    padding: 12px 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'DM Mono', monospace;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-align: center;
-  }
-  .amount-btn:hover, .amount-btn.selected {
-    background: var(--fire1);
-    border-color: var(--fire1);
-    color: white;
-  }
-  .amount-btn .amount-label {
-    display: block;
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 3px;
-    font-family: 'Inter', sans-serif;
-    font-style: italic;
-  }
-  .amount-btn:hover .amount-label, .amount-btn.selected .amount-label {
-    color: rgba(255,255,255,0.7);
-  }
-
-  .custom-amount {
-    margin-bottom: 16px;
-  }
-  .custom-amount label {
-    display: block;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--sub);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .custom-amount input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-bottom: 2px solid var(--fire1);
-    color: var(--text);
-    padding: 10px 14px;
-    font-family: 'DM Mono', monospace;
-    font-size: 18px;
-    outline: none;
-  }
-  .custom-amount input:focus { border-bottom-color: var(--fire3); }
-
-  .name-input-wrap {
-    margin-bottom: 16px;
-  }
-  .name-input-wrap label {
-    display: block;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--sub);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .name-input-wrap input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-bottom: 2px solid var(--fire1);
-    color: var(--text);
-    padding: 10px 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 15px;
-    outline: none;
-  }
-  .name-input-wrap input:focus { border-bottom-color: var(--fire3); }
-
-  .title-select-wrap {
-    margin-bottom: 20px;
-  }
-  .title-select-wrap label {
-    display: block;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: var(--sub);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .title-select-wrap select {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-bottom: 2px solid var(--fire1);
-    color: var(--text);
-    padding: 10px 14px;
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    outline: none;
-    appearance: none;
-    cursor: pointer;
-  }
-
-  .burn-btn {
-    width: 100%;
-    padding: 18px;
-    background: linear-gradient(135deg, var(--fire1), var(--fire2));
-    color: white;
-    border: none;
-    font-family: 'Black Ops One', cursive;
-    font-size: 20px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .burn-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, var(--fire2), var(--fire3));
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .burn-btn:hover::after { opacity: 1; }
-  .burn-btn span { position: relative; z-index: 1; }
-  .burn-btn:active { transform: scale(0.98); }
-
-  .donate-disclaimer {
-    margin-top: 12px;
-    font-size: 11px;
-    color: var(--muted);
-    text-align: center;
-    font-style: italic;
-    line-height: 1.5;
-  }
-
-  /* Stats bar */
-  .stats-bar {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1px;
-    background: var(--border);
-    border: 1px solid var(--border);
-    margin-bottom: 0;
-  }
-  .stat {
-    background: var(--surface);
-    padding: 20px 24px;
-    text-align: center;
-  }
-  .stat-num {
-    font-family: 'Black Ops One', cursive;
-    font-size: 32px;
-    background: linear-gradient(135deg, var(--fire1), var(--fire3));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1;
-    display: block;
-  }
-  .stat-label {
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: 'DM Mono', monospace;
-    margin-top: 4px;
-    display: block;
-  }
-
-  /* Leaderboard */
-  .leaderboard-section h2 {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 32px;
-    letter-spacing: 3px;
-    color: var(--fire3);
-    margin-bottom: 4px;
-  }
-  .leaderboard-section .lb-sub {
-    font-size: 13px;
-    color: var(--sub);
-    font-style: italic;
-    margin-bottom: 20px;
-  }
-
-  .leaderboard {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-
-  .lb-entry {
-    display: grid;
-    grid-template-columns: 40px 1fr auto;
-    align-items: center;
-    gap: 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    padding: 14px 18px;
-    transition: all 0.2s;
-    animation: slide-in 0.4s ease both;
-  }
-  @keyframes slide-in {
-    from { opacity: 0; transform: translateX(-20px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-  .lb-entry:hover { border-color: var(--fire1); background: var(--surface2); }
-  .lb-entry.rank-1 { border-color: var(--fire3); border-left: 4px solid var(--fire3); background: linear-gradient(90deg, rgba(255,215,0,0.06), transparent); }
-  .lb-entry.rank-2 { border-left: 4px solid #C0C0C0; }
-  .lb-entry.rank-3 { border-left: 4px solid #CD7F32; }
-  .lb-entry.is-new { border-color: var(--green); animation: new-entry 0.5s ease both; }
-  @keyframes new-entry {
-    0% { opacity: 0; transform: scale(0.95); background: rgba(0,255,136,0.1); }
-    100% { opacity: 1; transform: scale(1); }
-  }
-
-  .lb-rank {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--muted);
-    text-align: center;
-    font-weight: 500;
-  }
-  .lb-rank.gold { color: var(--fire3); font-size: 20px; }
-  .lb-rank.silver { color: #C0C0C0; font-size: 18px; }
-  .lb-rank.bronze { color: #CD7F32; font-size: 18px; }
-
-  .lb-info {}
-  .lb-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-  .lb-title-badge {
-    font-size: 10px;
-    background: rgba(255,69,0,0.15);
-    border: 1px solid rgba(255,69,0,0.3);
-    color: var(--fire2);
-    padding: 2px 8px;
-    font-family: 'DM Mono', monospace;
-    white-space: nowrap;
-  }
-  .lb-meta {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 3px;
-    font-family: 'DM Mono', monospace;
-  }
-
-  .lb-amount {
-    text-align: right;
-  }
-  .lb-amount .amount {
-    font-family: 'Black Ops One', cursive;
-    font-size: 22px;
-    background: linear-gradient(135deg, var(--fire1), var(--fire3));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: block;
-    line-height: 1;
-  }
-  .lb-amount .currency {
-    font-size: 11px;
-    color: var(--muted);
-    display: block;
-    margin-top: 2px;
-    font-family: 'DM Mono', monospace;
-  }
-
-  /* Flame bar beneath rank 1 */
-  .king-bar {
-    background: linear-gradient(90deg, var(--fire1), var(--fire2), var(--fire3));
-    height: 3px;
-    animation: shimmer 2s linear infinite;
-    background-size: 200% 100%;
-  }
-  @keyframes shimmer {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 200% 0%; }
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--muted);
-  }
-  .empty-state .e-icon { font-size: 48px; margin-bottom: 16px; display: block; }
-  .empty-state p { font-style: italic; font-size: 14px; }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--surface);
-    border: 1px solid var(--fire1);
-    border-left: 4px solid var(--fire1);
-    padding: 16px 24px;
-    font-size: 14px;
-    color: var(--text);
-    z-index: 1000;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    max-width: 400px;
-    width: 90%;
-    text-align: center;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-  .toast strong { color: var(--fire3); display: block; font-size: 16px; margin-bottom: 4px; }
-
-  /* Confetti */
-  .confetti-piece {
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    pointer-events: none;
-    z-index: 999;
-    animation: confetti-fall linear forwards;
-  }
-  @keyframes confetti-fall {
-    0% { opacity: 1; transform: translateY(-20px) rotate(0deg); }
-    100% { opacity: 0; transform: translateY(100vh) rotate(720deg); }
-  }
-
-  /* Roast messages */
-  .roast-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--fire1);
-    padding: 16px 20px;
-    margin-top: 20px;
-    font-size: 14px;
-    color: var(--sub);
-    font-style: italic;
-    line-height: 1.6;
-    min-height: 60px;
-    transition: all 0.3s;
-  }
-  .roast-box strong { color: var(--fire2); font-style: normal; }
-
-  /* Hall of shame section */
-  .hos-section {
-    margin-top: 40px;
-  }
-  .hos-section h3 {
-    font-family: 'Bebas Neue', cursive;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: var(--muted);
-    margin-bottom: 12px;
-  }
-  .hos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 8px;
-  }
-  .hos-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    padding: 14px 12px;
-    text-align: center;
-    font-size: 13px;
-  }
-  .hos-card .hc-name { color: var(--text); font-weight: 600; display: block; margin-bottom: 4px; }
-  .hos-card .hc-amount { color: var(--fire2); font-family: 'DM Mono', monospace; font-size: 12px; }
-
-  footer {
-    text-align: center;
-    padding: 30px 20px;
-    border-top: 1px solid var(--border);
-    color: var(--muted);
-    font-size: 12px;
-    font-style: italic;
-    position: relative;
-    z-index: 10;
-    line-height: 1.8;
-  }
+  .confetti-piece{position:fixed;pointer-events:none;z-index:999;animation:cf linear forwards;}
+  @keyframes cf{0%{opacity:1;transform:translateY(-20px) rotate(0deg);}100%{opacity:0;transform:translateY(100vh) rotate(720deg);}}
 </style>
 </head>
 <body>
@@ -595,409 +145,423 @@
 <div id="embers"></div>
 
 <header>
-  <div class="site-eyebrow">🔥 The Internet's Most Honest Website 🔥</div>
+  <div class="eyebrow">🔥 The Internet's Most Honest Website 🔥</div>
   <h1>BURN YOUR<br>MONEY</h1>
-  <span class="h1-dot-com">.COM</span>
+  <span class="dotcom">.COM</span>
   <p class="tagline">A leaderboard for people with more money than sense. Donate to nothing. Receive nothing. Brag forever.</p>
   <div class="live-ticker">
     <div class="live-dot"></div>
-    <span id="live-text">Leaderboard live — <span id="total-display">R0</span> incinerated and counting</span>
+    <span>Leaderboard live — <span id="total-display">R0</span> incinerated and counting</span>
   </div>
 </header>
 
 <main>
-
-  <!-- Stats bar -->
-  <div class="stats-bar" style="grid-column:1/-1">
-    <div class="stat">
-      <span class="stat-num" id="stat-total">R0</span>
-      <span class="stat-label">Total Burned</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num" id="stat-count">0</span>
-      <span class="stat-label">Idiots on Board</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num" id="stat-avg">R0</span>
-      <span class="stat-label">Avg. Stupidity</span>
-    </div>
-    <div class="stat">
-      <span class="stat-num" id="stat-top">—</span>
-      <span class="stat-label">Current Champion</span>
-    </div>
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stat"><span class="stat-num" id="s-total">R0</span><span class="stat-label">Total Burned</span></div>
+    <div class="stat"><span class="stat-num" id="s-count">0</span><span class="stat-label">Idiots on Board</span></div>
+    <div class="stat"><span class="stat-num" id="s-avg">R0</span><span class="stat-label">Avg. Stupidity</span></div>
+    <div class="stat"><span class="stat-num" id="s-biggest">R0</span><span class="stat-label">Biggest Single Burn</span></div>
+    <div class="stat"><span class="stat-num" id="s-top">—</span><span class="stat-label">Overall Champion</span></div>
   </div>
 
-  <!-- Leaderboard -->
-  <div class="leaderboard-section">
-    <h2>🏆 Hall of Flames</h2>
-    <p class="lb-sub">Ranked by total money thrown into the void. Updated in real time.</p>
-    <div class="leaderboard" id="leaderboard">
-      <div class="empty-state">
-        <span class="e-icon">🪣</span>
-        <p>Nobody has burned anything yet.<br>Be the first idiot. Make history.</p>
+  <!-- Leaderboards -->
+  <div>
+    <div class="lb-tabs">
+      <button class="lb-tab active" onclick="switchTab('cum',this)">🏆 Hall of Flames</button>
+      <button class="lb-tab"        onclick="switchTab('sin',this)">💸 Biggest Single Burn</button>
+    </div>
+
+    <div class="lb-panel active" id="panel-cum">
+      <p class="lb-desc">Cumulative total per person — the more you throw in over time, the higher you climb.</p>
+      <div class="leaderboard" id="lb-cum"></div>
+      <div class="hos-section" id="hos-cum" style="display:none">
+        <h3>Also Burned</h3>
+        <div class="hos-grid" id="hos-cum-grid"></div>
       </div>
     </div>
 
-    <div class="hos-section" id="hos-section" style="display:none">
-      <h3>Also Burned (Honourable Mentions)</h3>
-      <div class="hos-grid" id="hos-grid"></div>
+    <div class="lb-panel" id="panel-sin">
+      <p class="lb-desc">The single largest one-time donations ever made. Only verified PayFast payments appear here. One entry per payment — no stacking.</p>
+      <div class="leaderboard" id="lb-sin"></div>
     </div>
   </div>
 
-  <!-- Donation Panel -->
+  <!-- Donate panel -->
   <div class="donate-panel">
     <h2>🔥 Burn Your Money</h2>
-    <p class="sub">Pick an amount. Enter your name. Achieve absolutely nothing. Appear on the leaderboard forever.</p>
+    <p class="dp-sub">Pick an amount. Enter your name. Pay via PayFast. Appear on both leaderboards. Receive nothing else.</p>
 
-    <div class="amount-grid">
-      <button class="amount-btn" onclick="selectAmount(50, this)">
-        R50
-        <span class="amount-label">Mild Flex</span>
-      </button>
-      <button class="amount-btn" onclick="selectAmount(100, this)">
-        R100
-        <span class="amount-label">Showing Off</span>
-      </button>
-      <button class="amount-btn" onclick="selectAmount(250, this)">
-        R250
-        <span class="amount-label">Daddy Issues</span>
-      </button>
-      <button class="amount-btn" onclick="selectAmount(500, this)">
-        R500
-        <span class="amount-label">Cry for Help</span>
-      </button>
-      <button class="amount-btn" onclick="selectAmount(1000, this)">
-        R1,000
-        <span class="amount-label">Therapist-Grade</span>
-      </button>
-      <button class="amount-btn" onclick="selectAmount(5000, this)">
-        R5,000
-        <span class="amount-label">Diagnosed</span>
-      </button>
+    <div class="amt-grid">
+      <button class="amt-btn" onclick="selAmt(50,this)">R50<span class="al">Mild Flex</span></button>
+      <button class="amt-btn" onclick="selAmt(100,this)">R100<span class="al">Showing Off</span></button>
+      <button class="amt-btn" onclick="selAmt(250,this)">R250<span class="al">Daddy Issues</span></button>
+      <button class="amt-btn" onclick="selAmt(500,this)">R500<span class="al">Cry for Help</span></button>
+      <button class="amt-btn" onclick="selAmt(1000,this)">R1,000<span class="al">Therapist-Grade</span></button>
+      <button class="amt-btn" onclick="selAmt(5000,this)">R5,000<span class="al">Diagnosed</span></button>
     </div>
 
-    <div class="custom-amount">
+    <div class="fw">
       <label>Custom Amount (R)</label>
-      <input type="number" id="custom-input" placeholder="Enter any amount..." min="1" oninput="handleCustomInput()">
+      <input type="number" id="custom-input" placeholder="Any amount (min R10)..." min="10" oninput="custAmt()">
     </div>
-
-    <div class="name-input-wrap">
+    <div class="fw">
       <label>Your Display Name</label>
       <input type="text" id="name-input" placeholder="What should we call you?" maxlength="30">
     </div>
-
-    <div class="title-select-wrap">
-      <label>Choose Your Title</label>
-      <select id="title-select">
-        <option value="Professional Money Burner">Professional Money Burner</option>
-        <option value="Reckless Wealth Destroyer">Reckless Wealth Destroyer</option>
-        <option value="Certified Idiot (Self-Diagnosed)">Certified Idiot (Self-Diagnosed)</option>
-        <option value="Too Rich, Too Bored">Too Rich, Too Bored</option>
-        <option value="My Accountant Doesn't Know">My Accountant Doesn't Know</option>
-        <option value="Doing It For the Leaderboard">Doing It For the Leaderboard</option>
-        <option value="Actually This is a Tax Write-Off">Actually This is a Tax Write-Off</option>
-        <option value="My Therapist Knows About This">My Therapist Knows About This</option>
-        <option value="Generational Wealth Ender">Generational Wealth Ender</option>
-        <option value="Chaotic Neutral">Chaotic Neutral</option>
+    <div class="fw">
+      <label>Your Title on the Leaderboard</label>
+      <select id="title-sel">
+        <option>Professional Money Burner</option>
+        <option>Reckless Wealth Destroyer</option>
+        <option>Certified Idiot (Self-Diagnosed)</option>
+        <option>Too Rich, Too Bored</option>
+        <option>My Accountant Doesn't Know</option>
+        <option>Doing It For the Leaderboard</option>
+        <option>Actually This is a Tax Write-Off</option>
+        <option>My Therapist Knows About This</option>
+        <option>Generational Wealth Ender</option>
+        <option>Chaotic Neutral</option>
       </select>
     </div>
 
-    <div class="roast-box" id="roast-box">
+    <div class="roast" id="roast">
       <strong>Gogo Thandiwe weighs in:</strong> Select an amount and she will have thoughts.
     </div>
 
-    <button class="burn-btn" onclick="burnMoney()">
-      <span>🔥 BURN IT — <span id="btn-amount">R0</span></span>
+    <div class="pf-notice">
+      <strong>⚡ SECURE PAYMENT VIA PAYFAST</strong>
+      You'll be redirected to PayFast to complete your donation. Once confirmed, your name appears on both leaderboards automatically.
+    </div>
+
+    <button class="burn-btn" onclick="initBurn()">
+      <span>🔥 BURN IT — <span id="btn-amt">R0</span></span>
     </button>
-
-    <p class="donate-disclaimer">By clicking, you confirm you are voluntarily donating to nothing. No goods or services are provided. You are simply on the leaderboard now. That's it. That's all.</p>
+    <p class="disclaimer">Voluntary donation. No goods or services provided. You are simply on a leaderboard. That is genuinely it.</p>
   </div>
-
 </main>
 
-<div class="toast" id="toast">
-  <strong id="toast-title"></strong>
-  <span id="toast-msg"></span>
+<!-- PayFast config (bottom-right corner) -->
+<div class="cfg-panel" id="cfg-panel">
+  <button class="cfg-toggle" onclick="toggleCfg()">⚙ PayFast Config <span id="cfg-status" style="float:right;color:var(--fire1)">⚠ NOT SET</span></button>
+  <div class="cfg-body" id="cfg-body">
+    <div class="cfg-field"><label>Merchant ID</label><input type="text" id="cfg-mid" placeholder="e.g. 10000100"></div>
+    <div class="cfg-field"><label>Merchant Key</label><input type="text" id="cfg-mkey" placeholder="e.g. 46f0cd694581a"></div>
+    <div class="cfg-field"><label>Passphrase (if set)</label><input type="text" id="cfg-pass" placeholder="Leave blank if not set"></div>
+    <div class="cfg-field"><label>Your Site URL (return URL)</label><input type="text" id="cfg-url" placeholder="https://yourdomain.com/burnyourmoney.html"></div>
+    <button class="cfg-save" onclick="saveCfg()">💾 Save Config</button>
+    <p class="cfg-note">⚠ Stored in your browser only. Before going public, move merchant key to a backend (Netlify/Vercel function). Never expose it client-side in production.</p>
+  </div>
 </div>
 
-<footer>
-  BurnYourMoney.com · Est. 2026 · All donations are real but the point is fake<br>
-  We are not responsible for regret, embarrassment, or family interventions<br>
-  <span style="color:#333">Made for people who have already made questionable financial decisions</span>
-</footer>
+<div class="toast" id="toast"><strong id="t-title"></strong><span id="t-msg"></span></div>
+
+<!-- Hidden PayFast submission form -->
+<form id="pf-form" action="https://www.payfast.co.za/eng/process" method="POST" style="display:none">
+  <input type="hidden" name="merchant_id"      id="pf-mid">
+  <input type="hidden" name="merchant_key"     id="pf-mkey">
+  <input type="hidden" name="return_url"       id="pf-ret">
+  <input type="hidden" name="cancel_url"       id="pf-can">
+  <input type="hidden" name="notify_url"       id="pf-itn">
+  <input type="hidden" name="name_first"       id="pf-name">
+  <input type="hidden" name="amount"           id="pf-amt">
+  <input type="hidden" name="item_name"        id="pf-item">
+  <input type="hidden" name="item_description" id="pf-desc">
+  <input type="hidden" name="custom_str1"      id="pf-c1">
+  <input type="hidden" name="custom_str2"      id="pf-c2">
+  <input type="hidden" name="signature"        id="pf-sig">
+</form>
 
 <script>
-// ─── DATA ────────────────────────────────────────────────────────────────────
-
-// Seed data so leaderboard isn't empty
-const seedData = [
-  { name: "BigBossKhumalo", amount: 4200, title: "Generational Wealth Ender", time: Date.now() - 86400000 * 3 },
-  { name: "Derek_van_Rijswijk", amount: 2500, title: "My Accountant Doesn't Know", time: Date.now() - 86400000 * 2 },
-  { name: "Sipho_Flex", amount: 1800, title: "Doing It For the Leaderboard", time: Date.now() - 86400000 * 1.5 },
-  { name: "ThembaMoney", amount: 1000, title: "Too Rich, Too Bored", time: Date.now() - 86400000 },
-  { name: "NomvulaNotPlaying", amount: 750, title: "Chaotic Neutral", time: Date.now() - 3600000 * 10 },
-  { name: "AnonymousBaller", amount: 500, title: "Reckless Wealth Destroyer", time: Date.now() - 3600000 * 5 },
-  { name: "Precious_D", amount: 350, title: "Professional Money Burner", time: Date.now() - 3600000 * 2 },
-  { name: "JustinFromAccounting", amount: 200, title: "My Therapist Knows About This", time: Date.now() - 3600000 },
+// ── SEED DATA ────────────────────────────────
+const SEED_CUM = [
+  {name:"BigBossKhumalo",     amount:4200,title:"Generational Wealth Ender",         t:Date.now()-86400000*3},
+  {name:"Derek_van_Rijswijk", amount:2500,title:"My Accountant Doesn't Know",        t:Date.now()-86400000*2},
+  {name:"Sipho_Flex",         amount:1800,title:"Doing It For the Leaderboard",       t:Date.now()-86400000*1.5},
+  {name:"ThembaMoney",        amount:1000,title:"Too Rich, Too Bored",                t:Date.now()-86400000},
+  {name:"NomvulaNotPlaying",  amount:750, title:"Chaotic Neutral",                    t:Date.now()-3600000*10},
+  {name:"AnonymousBaller",    amount:500, title:"Reckless Wealth Destroyer",          t:Date.now()-3600000*5},
+  {name:"Precious_D",         amount:350, title:"Professional Money Burner",          t:Date.now()-3600000*2},
+  {name:"JustinAccounting",   amount:200, title:"My Therapist Knows About This",      t:Date.now()-3600000},
+];
+const SEED_SIN = [
+  {name:"BigBossKhumalo",     amount:2500,title:"Generational Wealth Ender",         t:Date.now()-86400000*3},
+  {name:"Derek_van_Rijswijk", amount:2000,title:"My Accountant Doesn't Know",        t:Date.now()-86400000*2},
+  {name:"Sipho_Flex",         amount:1800,title:"Doing It For the Leaderboard",       t:Date.now()-86400000*1.5},
+  {name:"ThembaMoney",        amount:1000,title:"Too Rich, Too Bored",                t:Date.now()-86400000},
+  {name:"NomvulaNotPlaying",  amount:750, title:"Chaotic Neutral",                    t:Date.now()-3600000*10},
 ];
 
-let entries = [];
+let cumData=[], sinData=[], selAmount=0;
+let pfc={merchantId:'',merchantKey:'',passphrase:'',returnUrl:location.href.split('?')[0]};
 
-// Load from storage or use seed
-async function loadEntries() {
-  try {
-    const result = await window.storage.get('burn-entries', true);
-    const stored = result ? JSON.parse(result.value) : null;
-    entries = stored && stored.length > 0 ? stored : [...seedData];
-  } catch(e) {
-    entries = [...seedData];
-  }
+// ── STORAGE ──────────────────────────────────
+async function load(){
+  try{const r=await window.storage.get('bym-cum',true);cumData=r?JSON.parse(r.value):[...SEED_CUM];}
+  catch(e){cumData=[...SEED_CUM];}
+  try{const r=await window.storage.get('bym-sin',true);sinData=r?JSON.parse(r.value):[...SEED_SIN];}
+  catch(e){sinData=[...SEED_SIN];}
+  try{
+    const s=JSON.parse(localStorage.getItem('bym-pfc')||'{}');
+    if(s.merchantId){pfc={...pfc,...s};updateCfgUI();}
+    else{document.getElementById('cfg-url').value=location.href.split('?')[0];}
+  }catch(e){}
   renderAll();
+  handleReturn();
 }
 
-async function saveEntries() {
-  try {
-    await window.storage.set('burn-entries', JSON.stringify(entries), true);
-  } catch(e) {}
+async function save(){
+  try{await window.storage.set('bym-cum',JSON.stringify(cumData),true);}catch(e){}
+  try{await window.storage.set('bym-sin',JSON.stringify(sinData),true);}catch(e){}
 }
 
-// ─── STATE ───────────────────────────────────────────────────────────────────
-let selectedAmount = 0;
-
-const roasts = {
-  50:   "R50? Cute. Are you sure you even want to be on this leaderboard? That's lunch money.",
-  100:  "R100. Respectable cowardice. You burned enough to feel something but not enough to regret it.",
-  250:  "R250. Your parents worked hard for that. This is fine.",
-  500:  "R500. You thought about it, didn't you. You sat there and thought 'yes, this is the move.' Incredible.",
-  1000: "R1,000. A full thousand rand. Into the void. No receipt. No product. Just vibes and a leaderboard spot. We salute you.",
-  5000: "R5,000. Gogo Thandiwe needs to sit down. Five. Thousand. Rand. For a spot on a joke website. You need to be studied.",
-};
-
-function selectAmount(val, btn) {
-  selectedAmount = val;
-  document.getElementById('custom-input').value = '';
-  document.getElementById('btn-amount').textContent = 'R' + val.toLocaleString();
-  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  updateRoast(val);
-}
-
-function handleCustomInput() {
-  const val = parseInt(document.getElementById('custom-input').value);
-  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-  if (val > 0) {
-    selectedAmount = val;
-    document.getElementById('btn-amount').textContent = 'R' + val.toLocaleString();
-    updateRoast(val);
-  } else {
-    selectedAmount = 0;
-    document.getElementById('btn-amount').textContent = 'R0';
+// ── PAYFAST RETURN ────────────────────────────
+// After PayFast redirects back, URL contains bym_* params we encoded in return_url
+function handleReturn(){
+  const p=new URLSearchParams(location.search);
+  const status=p.get('bym_status'),name=p.get('bym_name'),
+        title=p.get('bym_title'),amount=parseFloat(p.get('bym_amount'));
+  if(status==='success'&&name&&amount>0){
+    addEntry(decodeURIComponent(name),decodeURIComponent(title||'Professional Money Burner'),amount);
+    history.replaceState({},'',location.pathname);
+    toast('🔥 Payment confirmed!',`R${amount.toLocaleString()} burned. Welcome to the leaderboard, ${decodeURIComponent(name)}.`,true);
+    confetti();
+  }else if(status==='cancel'){
+    history.replaceState({},'',location.pathname);
+    toast('Payment cancelled','Your money survived. For now.');
   }
 }
 
-function updateRoast(val) {
-  const box = document.getElementById('roast-box');
-  let msg = roasts[val];
-  if (!msg) {
-    if (val < 50) msg = "That's... barely anything. Are you okay? Do you need this money back?";
-    else if (val < 250) msg = "Somewhere in between. The ancestors are mildly confused but supportive.";
-    else if (val < 1000) msg = "Getting serious. Your financial advisor would not approve. Good.";
-    else if (val < 5000) msg = "Thousands. Real thousands. On a joke website. Genuinely unwell behaviour.";
-    else msg = "Gogo has no words. She is just sitting here, looking at you, slowly shaking her head.";
-  }
-  box.innerHTML = `<strong>Gogo Thandiwe weighs in:</strong> ${msg}`;
+// ── ADD ENTRY ─────────────────────────────────
+function addEntry(name,title,amount){
+  // Cumulative
+  const ex=cumData.find(e=>e.name.toLowerCase()===name.toLowerCase());
+  if(ex){ex.amount+=amount;ex.title=title;ex.t=Date.now();ex.isNew=true;}
+  else cumData.push({name,amount,title,t:Date.now(),isNew:true});
+  cumData.sort((a,b)=>b.amount-a.amount);
+  // Single — every payment is its own record
+  sinData.push({name,amount,title,t:Date.now(),isNew:true});
+  sinData.sort((a,b)=>b.amount-a.amount);
+  save();renderAll();
+  setTimeout(()=>{cumData.forEach(e=>e.isNew=false);sinData.forEach(e=>e.isNew=false);},4000);
 }
 
-// ─── BURN ─────────────────────────────────────────────────────────────────────
-function burnMoney() {
-  const name = document.getElementById('name-input').value.trim();
-  const title = document.getElementById('title-select').value;
+// ── PAYFAST FORM SUBMIT ───────────────────────
+function initBurn(){
+  const name=document.getElementById('name-input').value.trim();
+  const title=document.getElementById('title-sel').value;
+  if(!selAmount||selAmount<10){toast('🔥 Pick an amount','Minimum R10 to get on the board.');return;}
+  if(!name){toast('📛 Name required','The leaderboard needs to know who to judge.');return;}
 
-  if (!selectedAmount || selectedAmount <= 0) {
-    showToast("🔥 Pick an amount first", "How much do you want to NOT receive in return?");
-    return;
-  }
-  if (!name) {
-    showToast("📛 Name required", "The leaderboard needs to know who to judge.");
-    return;
-  }
-
-  // Check if name exists, add to total
-  const existing = entries.find(e => e.name.toLowerCase() === name.toLowerCase());
-  if (existing) {
-    existing.amount += selectedAmount;
-    existing.title = title;
-    existing.time = Date.now();
-  } else {
-    entries.push({ name, amount: selectedAmount, title, time: Date.now(), isNew: true });
-    setTimeout(() => {
-      const e = entries.find(x => x.name === name);
-      if (e) e.isNew = false;
-    }, 3000);
+  if(!pfc.merchantId||!pfc.merchantKey){
+    // DEMO MODE — no keys yet, add directly for testing
+    toast('⚠ Demo Mode','PayFast not configured — entry added directly for testing. Set your keys in the config panel.');
+    addEntry(name,title,selAmount);
+    resetForm();confetti();return;
   }
 
-  entries.sort((a,b) => b.amount - a.amount);
-  saveEntries();
-  renderAll();
-  triggerConfetti();
+  // Build return URL with entry data so we can record it on redirect back
+  const base=pfc.returnUrl||location.href.split('?')[0];
+  const retUrl=`${base}?bym_status=success&bym_name=${encodeURIComponent(name)}&bym_title=${encodeURIComponent(title)}&bym_amount=${selAmount}`;
+  const canUrl=`${base}?bym_status=cancel`;
 
-  const rank = entries.findIndex(e => e.name.toLowerCase() === name.toLowerCase()) + 1;
-  const medals = ['🥇','🥈','🥉'];
-  const medal = medals[rank-1] || `#${rank}`;
-  showToast(`${medal} ${name} is now ranked #${rank}!`, `R${selectedAmount.toLocaleString()} burned. Absolutely nothing received. Well done.`);
+  const params={
+    merchant_id:      pfc.merchantId,
+    merchant_key:     pfc.merchantKey,
+    return_url:       retUrl,
+    cancel_url:       canUrl,
+    notify_url:       pfc.notifyUrl||'',
+    name_first:       name,
+    amount:           selAmount.toFixed(2),
+    item_name:        'BurnYourMoney Donation',
+    item_description: `Leaderboard entry for ${name}`,
+    custom_str1:      name,
+    custom_str2:      title,
+  };
 
-  // Reset
-  document.getElementById('name-input').value = '';
-  document.getElementById('custom-input').value = '';
-  document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
-  document.getElementById('btn-amount').textContent = 'R0';
-  selectedAmount = 0;
-  document.getElementById('roast-box').innerHTML = `<strong>Gogo Thandiwe weighs in:</strong> Select an amount and she will have thoughts.`;
+  // MD5 signature required by PayFast
+  let sigStr=Object.entries(params)
+    .filter(([,v])=>v!=='')
+    .map(([k,v])=>`${k}=${encodeURIComponent(v).replace(/%20/g,'+')}`)
+    .join('&');
+  if(pfc.passphrase) sigStr+=`&passphrase=${encodeURIComponent(pfc.passphrase).replace(/%20/g,'+')}`;
+  const sig=md5(sigStr);
+
+  // Populate & submit the hidden form
+  document.getElementById('pf-mid').value  =params.merchant_id;
+  document.getElementById('pf-mkey').value =params.merchant_key;
+  document.getElementById('pf-ret').value  =params.return_url;
+  document.getElementById('pf-can').value  =params.cancel_url;
+  document.getElementById('pf-itn').value  =params.notify_url;
+  document.getElementById('pf-name').value =params.name_first;
+  document.getElementById('pf-amt').value  =params.amount;
+  document.getElementById('pf-item').value =params.item_name;
+  document.getElementById('pf-desc').value =params.item_description;
+  document.getElementById('pf-c1').value   =params.custom_str1;
+  document.getElementById('pf-c2').value   =params.custom_str2;
+  document.getElementById('pf-sig').value  =sig;
+  document.getElementById('pf-form').submit();
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────────────────
-function renderAll() {
-  renderStats();
-  renderLeaderboard();
+function resetForm(){
+  document.getElementById('name-input').value='';
+  document.getElementById('custom-input').value='';
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('btn-amt').textContent='R0';
+  selAmount=0;
+  document.getElementById('roast').innerHTML='<strong>Gogo Thandiwe weighs in:</strong> Select an amount and she will have thoughts.';
 }
 
-function renderStats() {
-  const total = entries.reduce((s,e) => s+e.amount, 0);
-  const avg = entries.length ? Math.round(total / entries.length) : 0;
-  const top = entries[0]?.name || '—';
-
-  document.getElementById('stat-total').textContent = 'R' + total.toLocaleString();
-  document.getElementById('stat-count').textContent = entries.length;
-  document.getElementById('stat-avg').textContent = avg ? 'R' + avg.toLocaleString() : 'R0';
-  document.getElementById('stat-top').textContent = top.length > 10 ? top.slice(0,10)+'…' : top;
-  document.getElementById('total-display').textContent = 'R' + total.toLocaleString();
+// ── RENDER ────────────────────────────────────
+function renderAll(){
+  const total=cumData.reduce((s,e)=>s+e.amount,0);
+  const avg=cumData.length?Math.round(total/cumData.length):0;
+  const big=sinData[0]?.amount||0;
+  const top=cumData[0]?.name||'—';
+  document.getElementById('s-total').textContent='R'+total.toLocaleString();
+  document.getElementById('s-count').textContent=cumData.length;
+  document.getElementById('s-avg').textContent=avg?'R'+avg.toLocaleString():'R0';
+  document.getElementById('s-biggest').textContent=big?'R'+big.toLocaleString():'R0';
+  document.getElementById('s-top').textContent=top.length>10?top.slice(0,10)+'…':top;
+  document.getElementById('total-display').textContent='R'+total.toLocaleString();
+  renderLB('lb-cum',cumData.slice(0,10),false);
+  renderHOS(cumData.slice(10));
+  renderLB('lb-sin',sinData.slice(0,10),true);
 }
 
-function renderLeaderboard() {
-  const lb = document.getElementById('leaderboard');
-  const top = entries.slice(0, 10);
-  const rest = entries.slice(10);
-
-  if (entries.length === 0) {
-    lb.innerHTML = `<div class="empty-state"><span class="e-icon">🪣</span><p>Nobody has burned anything yet.<br>Be the first idiot. Make history.</p></div>`;
-    return;
-  }
-
-  const rankIcons = ['🥇','🥈','🥉'];
-  const rankClasses = ['gold','silver','bronze'];
-
-  lb.innerHTML = top.map((e, i) => {
-    const rank = i + 1;
-    const isTop3 = i < 3;
-    const rankDisplay = isTop3
-      ? `<span class="lb-rank ${rankClasses[i]}">${rankIcons[i]}</span>`
-      : `<span class="lb-rank">#${rank}</span>`;
-
-    const timeAgo = getTimeAgo(e.time);
-    const newBadge = e.isNew ? '<span style="color:var(--green);font-size:11px;font-family:DM Mono">● NEW</span>' : '';
-
-    return `
-      <div class="lb-entry ${rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : ''} ${e.isNew ? 'is-new' : ''}">
-        ${rankDisplay}
-        <div class="lb-info">
-          <div class="lb-name">${escHtml(e.name)} ${newBadge} <span class="lb-title-badge">${escHtml(e.title)}</span></div>
-          <div class="lb-meta">Burned ${timeAgo}</div>
-        </div>
-        <div class="lb-amount">
-          <span class="amount">R${e.amount.toLocaleString()}</span>
-          <span class="currency">into the void</span>
-        </div>
+function renderLB(id,data,isSin){
+  const el=document.getElementById(id);
+  if(!data.length){el.innerHTML=`<div class="empty-state"><span class="ei">🪣</span><p>${isSin?'No verified payments yet. Be the first.':'Nobody has burned anything yet. Be the first idiot.'}</p></div>`;return;}
+  const ri=['🥇','🥈','🥉'],rc=['gold','silver','bronze'];
+  el.innerHTML=data.map((e,i)=>{
+    const rank=i+1,top3=i<3;
+    const rankEl=top3?`<span class="lb-rank ${rc[i]}">${ri[i]}</span>`:`<span class="lb-rank">#${rank}</span>`;
+    const rClass=rank<=3?`rank-${rank}`:'';
+    const newBadge=e.isNew?'<span style="color:var(--green);font-size:10px;font-family:DM Mono">● NEW</span>':'';
+    const kBar=rank===1?`<div class="king-bar${isSin?' blue':''}"></div>`:'';
+    return`<div class="lb-entry ${rClass} ${isSin?'single':''} ${e.isNew?'is-new':''}">
+      ${rankEl}
+      <div>
+        <div class="lb-name">${esc(e.name)} ${newBadge} <span class="badge${isSin?' blue':''}">${esc(e.title)}</span></div>
+        <div class="lb-meta">${isSin?'Single donation · ':''}${ago(e.t)}</div>
       </div>
-      ${rank === 1 ? '<div class="king-bar"></div>' : ''}
-    `;
+      <div class="lb-amount">
+        <span class="amt${isSin?' blue':''}">R${e.amount.toLocaleString()}</span>
+        <span class="cur">${isSin?'one time':'total burned'}</span>
+      </div>
+    </div>${kBar}`;
   }).join('');
+}
 
-  // Honourable mentions
-  const hosSection = document.getElementById('hos-section');
-  const hosGrid = document.getElementById('hos-grid');
-  if (rest.length > 0) {
-    hosSection.style.display = 'block';
-    hosGrid.innerHTML = rest.map(e => `
-      <div class="hos-card">
-        <span class="hc-name">${escHtml(e.name)}</span>
-        <span class="hc-amount">R${e.amount.toLocaleString()}</span>
-      </div>
-    `).join('');
-  } else {
-    hosSection.style.display = 'none';
+function renderHOS(rest){
+  const el=document.getElementById('hos-cum');
+  const grid=document.getElementById('hos-cum-grid');
+  if(rest.length){el.style.display='block';grid.innerHTML=rest.map(e=>`<div class="hos-card"><span class="hcn">${esc(e.name)}</span><span class="hca">R${e.amount.toLocaleString()}</span></div>`).join('');}
+  else el.style.display='none';
+}
+
+// ── TAB ───────────────────────────────────────
+function switchTab(tab,btn){
+  document.querySelectorAll('.lb-tab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.lb-panel').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+}
+
+// ── AMOUNT UI ─────────────────────────────────
+const ROASTS={
+  50:"R50? Cute. Lunch money. The ancestors are barely awake.",
+  100:"R100. Respectable cowardice. Enough to feel something, not enough to regret it.",
+  250:"R250. Your parents worked hard for that. This is fine.",
+  500:"R500. You sat there and thought 'yes, this is the move.' Incredible.",
+  1000:"R1,000 into the void. No receipt. No product. Just vibes and a leaderboard spot.",
+  5000:"R5,000. Gogo needs to sit down. Five. Thousand. Rand. For a leaderboard spot. You need to be studied.",
+};
+function selAmt(v,btn){
+  selAmount=v;
+  document.getElementById('custom-input').value='';
+  document.getElementById('btn-amt').textContent='R'+v.toLocaleString();
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  setRoast(v);
+}
+function custAmt(){
+  const v=parseInt(document.getElementById('custom-input').value);
+  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('sel'));
+  if(v>0){selAmount=v;document.getElementById('btn-amt').textContent='R'+v.toLocaleString();setRoast(v);}
+  else{selAmount=0;document.getElementById('btn-amt').textContent='R0';}
+}
+function setRoast(v){
+  let m=ROASTS[v];
+  if(!m){
+    if(v<50)m="That's barely anything. Are you okay?";
+    else if(v<250)m="Somewhere in between. The ancestors are mildly confused.";
+    else if(v<1000)m="Getting serious. Your financial advisor would not approve.";
+    else if(v<5000)m="Thousands on a joke website. Genuinely unwell behaviour.";
+    else m="Gogo has no words. She is just looking at you, slowly shaking her head.";
+  }
+  document.getElementById('roast').innerHTML=`<strong>Gogo Thandiwe weighs in:</strong> ${m}`;
+}
+
+// ── CONFIG ────────────────────────────────────
+function toggleCfg(){document.getElementById('cfg-body').classList.toggle('open');}
+function saveCfg(){
+  pfc.merchantId =document.getElementById('cfg-mid').value.trim();
+  pfc.merchantKey=document.getElementById('cfg-mkey').value.trim();
+  pfc.passphrase =document.getElementById('cfg-pass').value.trim();
+  pfc.returnUrl  =document.getElementById('cfg-url').value.trim()||location.href.split('?')[0];
+  localStorage.setItem('bym-pfc',JSON.stringify(pfc));
+  updateCfgUI();
+  toast('✅ Config saved','PayFast keys stored. Site is now live-ready.',true);
+  document.getElementById('cfg-body').classList.remove('open');
+}
+function updateCfgUI(){
+  const s=document.getElementById('cfg-status');
+  if(pfc.merchantId&&pfc.merchantKey){
+    s.textContent='✓ CONFIGURED';s.style.color='var(--green)';
+    document.getElementById('cfg-mid').value =pfc.merchantId;
+    document.getElementById('cfg-mkey').value=pfc.merchantKey;
+    document.getElementById('cfg-pass').value=pfc.passphrase;
+    document.getElementById('cfg-url').value =pfc.returnUrl;
+  }else{
+    s.textContent='⚠ NOT SET';s.style.color='var(--fire1)';
+    document.getElementById('cfg-url').value=location.href.split('?')[0];
   }
 }
 
-function getTimeAgo(ts) {
-  const diff = Date.now() - ts;
-  const mins = Math.floor(diff / 60000);
-  const hrs = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-  if (mins < 1) return 'just now';
-  if (mins < 60) return `${mins}m ago`;
-  if (hrs < 24) return `${hrs}h ago`;
-  return `${days}d ago`;
+// ── HELPERS ───────────────────────────────────
+function ago(ts){const d=Date.now()-ts,m=Math.floor(d/60000),h=Math.floor(d/3600000),dy=Math.floor(d/86400000);if(m<1)return'just now';if(m<60)return`${m}m ago`;if(h<24)return`${h}h ago`;return`${dy}d ago`;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function toast(title,msg,ok=false){
+  const t=document.getElementById('toast');
+  document.getElementById('t-title').textContent=title;
+  document.getElementById('t-msg').textContent=msg;
+  t.className='toast'+(ok?' ok':'');t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),5500);
+}
+function confetti(){
+  const cols=['#FF4500','#FF8C00','#FFD700','#FFF8DC','#FF6347'];
+  for(let i=0;i<60;i++)setTimeout(()=>{
+    const c=document.createElement('div');c.className='confetti-piece';
+    c.style.cssText=`left:${Math.random()*100}vw;top:0;width:8px;height:8px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s;border-radius:${Math.random()>.5?'50%':'0'};`;
+    document.body.appendChild(c);setTimeout(()=>c.remove(),3500);
+  },i*20);
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+// ── MD5 (PayFast signature) ───────────────────
+function md5(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,d,F,H,x;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);x=(G&1073741823)+(k&1073741823);if(I&d){return(x^2147483648^F^H)}if(I|d){if(x&1073741824){return(x^3221225472^F^H)}else{return(x^1073741824^F^H)}}else{return(x^F^H)}}function r(d,F,k){return(d&F)|(~d&k)}function q(d,F,k){return(d&k)|(F&~k)}function p(d,F,k){return(d^F^k)}function n(d,F,k){return(F^(d|~k))}function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]|(G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}function B(x){var k="";var F="";var G,d;for(d=0;d<=3;d++){G=(x>>>(d*8))&255;F="0"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}function J(k){k=k.replace(/\r\n/g,"\n");var d="";for(var F=0;F<k.length;F++){var x=k.charCodeAt(F);if(x<128){d+=String.fromCharCode(x)}else if((x>127)&&(x<2048)){d+=String.fromCharCode((x>>6)|192);d+=String.fromCharCode((x&63)|128)}else{d+=String.fromCharCode((x>>12)|224);d+=String.fromCharCode(((x>>6)&63)|128);d+=String.fromCharCode((x&63)|128)}}return d}var C=Array();var P,h,E,v,g,Y,X,W,V;var S=7,Q=12,N=17,M=22;var A=5,z=9,y=14,w=20;var o=4,m=11,l=16,j=23;var U=6,T=10,R=15,O=21;s=J(s);C=e(s);Y=1732584193;X=4023233417;W=2562383102;V=271733878;for(P=0;P<C.length;P+=16){h=Y;E=X;v=W;g=V;Y=u(Y,X,W,V,C[P+0],S,3614090360);V=u(V,Y,X,W,C[P+1],Q,3905402710);W=u(W,V,Y,X,C[P+2],N,606105819);X=u(X,W,V,Y,C[P+3],M,3250441966);Y=u(Y,X,W,V,C[P+4],S,4118548399);V=u(V,Y,X,W,C[P+5],Q,1200080426);W=u(W,V,Y,X,C[P+6],N,2821735955);X=u(X,W,V,Y,C[P+7],M,4249261313);Y=u(Y,X,W,V,C[P+8],S,1770035416);V=u(V,Y,X,W,C[P+9],Q,2336552879);W=u(W,V,Y,X,C[P+10],N,4294925233);X=u(X,W,V,Y,C[P+11],M,2304563134);Y=u(Y,X,W,V,C[P+12],S,1804603682);V=u(V,Y,X,W,C[P+13],Q,4254626195);W=u(W,V,Y,X,C[P+14],N,2792965006);X=u(X,W,V,Y,C[P+15],M,1236535329);Y=f(Y,X,W,V,C[P+1],A,4129170786);V=f(V,Y,X,W,C[P+6],z,3225465664);W=f(W,V,Y,X,C[P+11],y,643717713);X=f(X,W,V,Y,C[P+0],w,3921069994);Y=f(Y,X,W,V,C[P+5],A,3593408605);V=f(V,Y,X,W,C[P+10],z,38016083);W=f(W,V,Y,X,C[P+15],y,3634488961);X=f(X,W,V,Y,C[P+4],w,3889429448);Y=f(Y,X,W,V,C[P+9],A,568446438);V=f(V,Y,X,W,C[P+14],z,3275163606);W=f(W,V,Y,X,C[P+3],y,4107603335);X=f(X,W,V,Y,C[P+8],w,1163531501);Y=f(Y,X,W,V,C[P+13],A,2850285829);V=f(V,Y,X,W,C[P+2],z,4243563512);W=f(W,V,Y,X,C[P+7],y,1735328473);X=f(X,W,V,Y,C[P+12],w,2368359562);Y=D(Y,X,W,V,C[P+5],o,4294588738);V=D(V,Y,X,W,C[P+8],m,2272392833);W=D(W,V,Y,X,C[P+11],l,1839030562);X=D(X,W,V,Y,C[P+14],j,4259657740);Y=D(Y,X,W,V,C[P+1],o,2763975236);V=D(V,Y,X,W,C[P+4],m,1272893353);W=D(W,V,Y,X,C[P+7],l,4139469664);X=D(X,W,V,Y,C[P+10],j,3200236656);Y=D(Y,X,W,V,C[P+13],o,681279174);V=D(V,Y,X,W,C[P+0],m,3936430074);W=D(W,V,Y,X,C[P+3],l,3572445317);X=D(X,W,V,Y,C[P+6],j,76029189);Y=D(Y,X,W,V,C[P+9],o,3654602809);V=D(V,Y,X,W,C[P+12],m,3873151461);W=D(W,V,Y,X,C[P+15],l,530742520);X=D(X,W,V,Y,C[P+2],j,3299628645);Y=t(Y,X,W,V,C[P+0],U,4096336452);V=t(V,Y,X,W,C[P+7],T,1126891415);W=t(W,V,Y,X,C[P+14],R,2878612391);X=t(X,W,V,Y,C[P+5],O,4237533241);Y=t(Y,X,W,V,C[P+12],U,1700485571);V=t(V,Y,X,W,C[P+3],T,2399980690);W=t(W,V,Y,X,C[P+10],R,4293915773);X=t(X,W,V,Y,C[P+1],O,2240044497);Y=t(Y,X,W,V,C[P+8],U,1873313359);V=t(V,Y,X,W,C[P+15],T,4264355552);W=t(W,V,Y,X,C[P+6],R,2734768916);X=t(X,W,V,Y,C[P+13],O,1309151649);Y=t(Y,X,W,V,C[P+4],U,4149444226);V=t(V,Y,X,W,C[P+11],T,3174756917);W=t(W,V,Y,X,C[P+2],R,718787259);X=t(X,W,V,Y,C[P+9],O,3951481745);Y=K(Y,h);X=K(X,E);W=K(W,v);V=K(V,g)}return(B(Y)+B(X)+B(W)+B(V)).toLowerCase()}
 
-// ─── TOAST ───────────────────────────────────────────────────────────────────
-function showToast(title, msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-title').textContent = title;
-  document.getElementById('toast-msg').textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 5000);
-}
-
-// ─── CONFETTI ────────────────────────────────────────────────────────────────
-function triggerConfetti() {
-  const colors = ['#FF4500','#FF8C00','#FFD700','#FFF8DC','#FF6347'];
-  for (let i = 0; i < 60; i++) {
-    setTimeout(() => {
-      const c = document.createElement('div');
-      c.className = 'confetti-piece';
-      c.style.cssText = `
-        left: ${Math.random() * 100}vw;
-        top: 0;
-        background: ${colors[Math.floor(Math.random() * colors.length)]};
-        animation-duration: ${1.5 + Math.random() * 2}s;
-        animation-delay: ${Math.random() * 0.5}s;
-        border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
-        transform: rotate(${Math.random()*360}deg);
-      `;
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 3000);
-    }, i * 20);
-  }
-}
-
-// ─── EMBERS ──────────────────────────────────────────────────────────────────
-(function spawnEmbers() {
-  const container = document.getElementById('embers');
-  const colors = ['#FF4500','#FF8C00','#FFD700','#FF6347'];
-  for (let i = 0; i < 25; i++) {
-    const e = document.createElement('div');
-    e.className = 'ember';
-    const drift = (Math.random() - 0.5) * 200 + 'px';
-    e.style.cssText = `
-      left: ${Math.random() * 100}vw;
-      bottom: 0;
-      background: ${colors[Math.floor(Math.random()*colors.length)]};
-      --drift: ${drift};
-      animation-duration: ${8 + Math.random() * 12}s;
-      animation-delay: ${Math.random() * 8}s;
-      width: ${2 + Math.random() * 4}px;
-      height: ${2 + Math.random() * 4}px;
-    `;
-    container.appendChild(e);
+// ── EMBERS ────────────────────────────────────
+(function(){
+  const el=document.getElementById('embers'),cols=['#FF4500','#FF8C00','#FFD700','#FF6347'];
+  for(let i=0;i<25;i++){
+    const e=document.createElement('div');e.className='ember';
+    e.style.cssText=`left:${Math.random()*100}vw;bottom:0;background:${cols[Math.floor(Math.random()*cols.length)]};--drift:${(Math.random()-.5)*200}px;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*8}s;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;`;
+    el.appendChild(e);
   }
 })();
 
-// ─── INIT ────────────────────────────────────────────────────────────────────
-loadEntries();
+load();
 </script>
 </body>
 </html>
