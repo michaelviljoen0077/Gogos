@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BurnYourMoney.com — Leaderboard of the Legendarily Stupid</title>
+<title>BurnYourMoney.com — The Flex Leaderboard</title>
 <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -48,8 +48,8 @@
   .stat-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;font-family:'DM Mono',monospace;margin-top:4px;display:block;}
 
   /* TABS */
-  .lb-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:0;}
-  .lb-tab{padding:12px 22px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;color:var(--muted);border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;transition:all .2s;}
+  .lb-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:0;overflow-x:auto;}
+  .lb-tab{padding:12px 22px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;color:var(--muted);border:none;border-bottom:2px solid transparent;margin-bottom:-2px;background:none;transition:all .2s;white-space:nowrap;}
   .lb-tab:hover{color:var(--fire2);}
   .lb-tab.active{color:var(--fire3);border-bottom-color:var(--fire3);}
   .lb-panel{display:none;padding-top:20px;}
@@ -117,16 +117,22 @@
   .disclaimer{margin-top:10px;font-size:11px;color:var(--muted);text-align:center;font-style:italic;line-height:1.5;}
 
   /* CONFIG PANEL */
-  .cfg-panel{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--fire1);z-index:500;width:320px;font-size:13px;}
+  .cfg-panel{position:fixed;bottom:20px;right:20px;background:var(--surface);border:1px solid var(--fire1);z-index:500;width:340px;font-size:13px;}
   .cfg-toggle{background:var(--fire1);color:#fff;border:none;padding:10px 16px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;width:100%;text-align:left;}
-  .cfg-body{display:none;padding:16px;}
+  .cfg-body{display:none;padding:16px;max-height:70vh;overflow-y:auto;}
   .cfg-body.open{display:block;}
   .cfg-field{margin-bottom:12px;}
   .cfg-field label{display:block;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--sub);text-transform:uppercase;margin-bottom:5px;}
   .cfg-field input{width:100%;background:#0a0a0a;border:1px solid var(--border);color:var(--text);padding:7px 10px;font-family:'DM Mono',monospace;font-size:12px;outline:none;}
+  .cfg-section{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--fire2);text-transform:uppercase;margin:16px 0 10px;border-top:1px solid var(--border);padding-top:12px;}
   .cfg-save{width:100%;padding:9px;background:var(--fire1);color:#fff;border:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;margin-top:4px;}
   .cfg-save:hover{background:var(--fire2);}
   .cfg-note{font-size:11px;color:var(--muted);font-style:italic;margin-top:10px;line-height:1.5;}
+  .cfg-status-ok{color:var(--green);}
+  .cfg-status-bad{color:var(--fire1);}
+
+  /* loading overlay */
+  .loading-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--fire1),var(--fire3));width:0;z-index:9999;transition:width .3s;}
 
   /* TOAST */
   .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface);border:1px solid var(--fire1);border-left:4px solid var(--fire1);padding:16px 24px;font-size:14px;color:var(--text);z-index:1000;transition:transform .4s cubic-bezier(.34,1.56,.64,1);max-width:420px;width:90%;text-align:center;}
@@ -134,6 +140,8 @@
   .toast strong{color:var(--fire3);display:block;font-size:16px;margin-bottom:4px;}
   .toast.ok{border-color:var(--green);}
   .toast.ok strong{color:var(--green);}
+  .toast.err{border-color:#ff4444;}
+  .toast.err strong{color:#ff4444;}
 
   .confetti-piece{position:fixed;pointer-events:none;z-index:999;animation:cf linear forwards;}
   @keyframes cf{0%{opacity:1;transform:translateY(-20px) rotate(0deg);}100%{opacity:0;transform:translateY(100vh) rotate(720deg);}}
@@ -143,24 +151,25 @@
 
 <div class="fire-bg"></div>
 <div id="embers"></div>
+<div class="loading-bar" id="loading-bar"></div>
 
 <header>
-  <div class="eyebrow">🔥 The Internet's Most Honest Website 🔥</div>
+  <div class="eyebrow">🔥 The Official Flex Leaderboard 🔥</div>
   <h1>BURN YOUR<br>MONEY</h1>
   <span class="dotcom">.COM</span>
-  <p class="tagline">A leaderboard for people with more money than sense. Donate to nothing. Receive nothing. Brag forever.</p>
+  <p class="tagline">The leaderboard for people who burn money for sport. Donate. Flex. Live forever in the Hall of Flames.</p>
   <div class="live-ticker">
     <div class="live-dot"></div>
-    <span>Leaderboard live — <span id="total-display">R0</span> incinerated and counting</span>
+    <span>Live — <span id="total-display">R0</span> flexed and counting</span>
   </div>
 </header>
 
 <main>
   <!-- Stats -->
   <div class="stats-bar">
-    <div class="stat"><span class="stat-num" id="s-total">R0</span><span class="stat-label">Total Burned</span></div>
-    <div class="stat"><span class="stat-num" id="s-count">0</span><span class="stat-label">Idiots on Board</span></div>
-    <div class="stat"><span class="stat-num" id="s-avg">R0</span><span class="stat-label">Avg. Stupidity</span></div>
+    <div class="stat"><span class="stat-num" id="s-total">R0</span><span class="stat-label">Total Flexed</span></div>
+    <div class="stat"><span class="stat-num" id="s-count">0</span><span class="stat-label">Flexers on Board</span></div>
+    <div class="stat"><span class="stat-num" id="s-avg">R0</span><span class="stat-label">Avg. Flex</span></div>
     <div class="stat"><span class="stat-num" id="s-biggest">R0</span><span class="stat-label">Biggest Single Burn</span></div>
     <div class="stat"><span class="stat-num" id="s-top">—</span><span class="stat-label">Overall Champion</span></div>
   </div>
@@ -169,36 +178,44 @@
   <div>
     <div class="lb-tabs">
       <button class="lb-tab active" onclick="switchTab('cum',this)">🏆 Hall of Flames</button>
-      <button class="lb-tab"        onclick="switchTab('sin',this)">💸 Biggest Single Burn</button>
+      <button class="lb-tab" onclick="switchTab('sin',this)">💸 Biggest Single Burn</button>
+      <button class="lb-tab" onclick="switchTab('tod',this)">📅 Today</button>
     </div>
 
     <div class="lb-panel active" id="panel-cum">
-      <p class="lb-desc">Cumulative total per person — the more you throw in over time, the higher you climb.</p>
+      <p class="lb-desc">All-time total flexed per person. Stack your burns, climb the ranks, own the throne.</p>
       <div class="leaderboard" id="lb-cum"></div>
       <div class="hos-section" id="hos-cum" style="display:none">
-        <h3>Also Burned</h3>
+        <h3>Also on the Board</h3>
         <div class="hos-grid" id="hos-cum-grid"></div>
       </div>
     </div>
 
     <div class="lb-panel" id="panel-sin">
-      <p class="lb-desc">The single largest one-time donations ever made. Only verified PayFast payments appear here. One entry per payment — no stacking.</p>
+      <p class="lb-desc">The biggest single burns ever recorded. One entry per payment — pure, undiluted flex. Only real PayFast payments here.</p>
       <div class="leaderboard" id="lb-sin"></div>
+    </div>
+
+    <div class="lb-panel" id="panel-tod">
+      <p class="lb-desc">Today's flexers, ranked by single donation. Resets at midnight SAST. Today's champion gets the crown. 👑</p>
+      <div id="today-date" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;"></div>
+      <div class="leaderboard" id="lb-tod"></div>
+      <div id="today-cd" style="margin-top:20px;background:var(--surface2);border:1px solid var(--border);border-left:3px solid var(--fire2);padding:14px 16px;font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;line-height:1.6;"></div>
     </div>
   </div>
 
   <!-- Donate panel -->
   <div class="donate-panel">
-    <h2>🔥 Burn Your Money</h2>
-    <p class="dp-sub">Pick an amount. Enter your name. Pay via PayFast. Appear on both leaderboards. Receive nothing else.</p>
+    <h2>🔥 Drop Your Flex</h2>
+    <p class="dp-sub">Pick your amount. Enter your name. Hit PayFast. Claim your spot on the leaderboard. Nothing else is included. That's the whole thing.</p>
 
     <div class="amt-grid">
-      <button class="amt-btn" onclick="selAmt(50,this)">R50<span class="al">Mild Flex</span></button>
-      <button class="amt-btn" onclick="selAmt(100,this)">R100<span class="al">Showing Off</span></button>
-      <button class="amt-btn" onclick="selAmt(250,this)">R250<span class="al">Daddy Issues</span></button>
-      <button class="amt-btn" onclick="selAmt(500,this)">R500<span class="al">Cry for Help</span></button>
-      <button class="amt-btn" onclick="selAmt(1000,this)">R1,000<span class="al">Therapist-Grade</span></button>
-      <button class="amt-btn" onclick="selAmt(5000,this)">R5,000<span class="al">Diagnosed</span></button>
+      <button class="amt-btn" onclick="selAmt(50,this)">R50<span class="al">Starter Flex</span></button>
+      <button class="amt-btn" onclick="selAmt(100,this)">R100<span class="al">Making Moves</span></button>
+      <button class="amt-btn" onclick="selAmt(250,this)">R250<span class="al">Boss Energy</span></button>
+      <button class="amt-btn" onclick="selAmt(500,this)">R500<span class="al">No Hesitation</span></button>
+      <button class="amt-btn" onclick="selAmt(1000,this)">R1,000<span class="al">Certified Baller</span></button>
+      <button class="amt-btn" onclick="selAmt(5000,this)">R5,000<span class="al">Untouchable</span></button>
     </div>
 
     <div class="fw">
@@ -213,50 +230,60 @@
       <label>Your Title on the Leaderboard</label>
       <select id="title-sel">
         <option>Professional Money Burner</option>
-        <option>Reckless Wealth Destroyer</option>
-        <option>Certified Idiot (Self-Diagnosed)</option>
+        <option>Certified Baller</option>
         <option>Too Rich, Too Bored</option>
         <option>My Accountant Doesn't Know</option>
         <option>Doing It For the Leaderboard</option>
         <option>Actually This is a Tax Write-Off</option>
-        <option>My Therapist Knows About This</option>
-        <option>Generational Wealth Ender</option>
+        <option>Generational Wealth Flexer</option>
+        <option>No Ragrets</option>
         <option>Chaotic Neutral</option>
+        <option>Living My Best Life</option>
       </select>
     </div>
 
     <div class="roast" id="roast">
-      <strong>Gogo Thandiwe weighs in:</strong> Select an amount and she will have thoughts.
+      <strong>Gogo Thandiwe's verdict:</strong> Select an amount and she will weigh in.
     </div>
 
     <div class="pf-notice">
       <strong>⚡ SECURE PAYMENT VIA PAYFAST</strong>
-      You'll be redirected to PayFast to complete your donation. Once confirmed, your name appears on both leaderboards automatically.
+      You'll be redirected to PayFast to complete your donation. Once confirmed, your name appears on the leaderboard automatically.
     </div>
 
     <button class="burn-btn" onclick="initBurn()">
-      <span>🔥 BURN IT — <span id="btn-amt">R0</span></span>
+      <span>🔥 FLEX IT — <span id="btn-amt">R0</span></span>
     </button>
     <p class="disclaimer">Voluntary donation. No goods or services provided. You are simply on a leaderboard. That is genuinely it.</p>
   </div>
 </main>
 
-<!-- PayFast config (bottom-right corner) -->
+<!-- Config panel -->
 <div class="cfg-panel" id="cfg-panel">
-  <button class="cfg-toggle" onclick="toggleCfg()">⚙ PayFast Config <span id="cfg-status" style="float:right;color:var(--fire1)">⚠ NOT SET</span></button>
+  <button class="cfg-toggle" onclick="toggleCfg()">⚙ Config &nbsp;<span id="cfg-status" class="cfg-status-bad">⚠ NOT SET</span></button>
   <div class="cfg-body" id="cfg-body">
+
+    <div class="cfg-section">PayFast</div>
     <div class="cfg-field"><label>Merchant ID</label><input type="text" id="cfg-mid" placeholder="e.g. 10000100"></div>
     <div class="cfg-field"><label>Merchant Key</label><input type="text" id="cfg-mkey" placeholder="e.g. 46f0cd694581a"></div>
-    <div class="cfg-field"><label>Passphrase (if set)</label><input type="text" id="cfg-pass" placeholder="Leave blank if not set"></div>
-    <div class="cfg-field"><label>Your Site URL (return URL)</label><input type="text" id="cfg-url" placeholder="https://yourdomain.com/burnyourmoney.html"></div>
+    <div class="cfg-field"><label>Passphrase (leave blank if not set)</label><input type="text" id="cfg-pass" placeholder="optional"></div>
+    <div class="cfg-field"><label>Your Site URL (this page's full URL)</label><input type="text" id="cfg-url" placeholder="https://username.github.io/repo/index.html"></div>
+
+    <div class="cfg-section">JSONBin — Leaderboard Persistence</div>
+    <p class="cfg-note" style="margin-bottom:10px;">
+      Free at <strong style="color:var(--text)">jsonbin.io</strong> — sign up, create a bin with <code style="color:var(--fire2)">{"cum":[],"sin":[]}</code>, copy your Bin ID and API key below.
+    </p>
+    <div class="cfg-field"><label>JSONBin Bin ID</label><input type="text" id="cfg-bin-id" placeholder="e.g. 64a1b2c3d4e5f6a7b8c9d0e1"></div>
+    <div class="cfg-field"><label>JSONBin API Key (X-Master-Key)</label><input type="text" id="cfg-bin-key" placeholder="$2a$10$..."></div>
+
     <button class="cfg-save" onclick="saveCfg()">💾 Save Config</button>
-    <p class="cfg-note">⚠ Stored in your browser only. Before going public, move merchant key to a backend (Netlify/Vercel function). Never expose it client-side in production.</p>
+    <p class="cfg-note">All keys stored in your browser only (localStorage). Never commit them to GitHub.</p>
   </div>
 </div>
 
 <div class="toast" id="toast"><strong id="t-title"></strong><span id="t-msg"></span></div>
 
-<!-- Hidden PayFast submission form -->
+<!-- Hidden PayFast form -->
 <form id="pf-form" action="https://www.payfast.co.za/eng/process" method="POST" style="display:none">
   <input type="hidden" name="merchant_id"      id="pf-mid">
   <input type="hidden" name="merchant_key"     id="pf-mkey">
@@ -273,295 +300,421 @@
 </form>
 
 <script>
-// ── SEED DATA ────────────────────────────────
-const SEED_CUM = [
-  {name:"BigBossKhumalo",     amount:4200,title:"Generational Wealth Ender",         t:Date.now()-86400000*3},
-  {name:"Derek_van_Rijswijk", amount:2500,title:"My Accountant Doesn't Know",        t:Date.now()-86400000*2},
-  {name:"Sipho_Flex",         amount:1800,title:"Doing It For the Leaderboard",       t:Date.now()-86400000*1.5},
-  {name:"ThembaMoney",        amount:1000,title:"Too Rich, Too Bored",                t:Date.now()-86400000},
-  {name:"NomvulaNotPlaying",  amount:750, title:"Chaotic Neutral",                    t:Date.now()-3600000*10},
-  {name:"AnonymousBaller",    amount:500, title:"Reckless Wealth Destroyer",          t:Date.now()-3600000*5},
-  {name:"Precious_D",         amount:350, title:"Professional Money Burner",          t:Date.now()-3600000*2},
-  {name:"JustinAccounting",   amount:200, title:"My Therapist Knows About This",      t:Date.now()-3600000},
-];
-const SEED_SIN = [
-  {name:"BigBossKhumalo",     amount:2500,title:"Generational Wealth Ender",         t:Date.now()-86400000*3},
-  {name:"Derek_van_Rijswijk", amount:2000,title:"My Accountant Doesn't Know",        t:Date.now()-86400000*2},
-  {name:"Sipho_Flex",         amount:1800,title:"Doing It For the Leaderboard",       t:Date.now()-86400000*1.5},
-  {name:"ThembaMoney",        amount:1000,title:"Too Rich, Too Bored",                t:Date.now()-86400000},
-  {name:"NomvulaNotPlaying",  amount:750, title:"Chaotic Neutral",                    t:Date.now()-3600000*10},
-];
+// ─────────────────────────────────────────────
+// CONFIG
+// ─────────────────────────────────────────────
+let cfg = {
+  merchantId:'', merchantKey:'', passphrase:'',
+  returnUrl: location.href.split('?')[0],
+  binId:'', binKey:''
+};
 
-let cumData=[], sinData=[], selAmount=0;
-let pfc={merchantId:'',merchantKey:'',passphrase:'',returnUrl:location.href.split('?')[0]};
-
-// ── STORAGE ──────────────────────────────────
-async function load(){
-  try{const r=await window.storage.get('bym-cum',true);cumData=r?JSON.parse(r.value):[...SEED_CUM];}
-  catch(e){cumData=[...SEED_CUM];}
-  try{const r=await window.storage.get('bym-sin',true);sinData=r?JSON.parse(r.value):[...SEED_SIN];}
-  catch(e){sinData=[...SEED_SIN];}
+function loadCfg(){
   try{
-    const s=JSON.parse(localStorage.getItem('bym-pfc')||'{}');
-    if(s.merchantId){pfc={...pfc,...s};updateCfgUI();}
-    else{document.getElementById('cfg-url').value=location.href.split('?')[0];}
+    const s = JSON.parse(localStorage.getItem('bym-cfg') || '{}');
+    cfg = {...cfg, ...s};
+    if(!cfg.returnUrl) cfg.returnUrl = location.href.split('?')[0];
   }catch(e){}
+  updateCfgUI();
+}
+
+function saveCfg(){
+  cfg.merchantId  = document.getElementById('cfg-mid').value.trim();
+  cfg.merchantKey = document.getElementById('cfg-mkey').value.trim();
+  cfg.passphrase  = document.getElementById('cfg-pass').value.trim();
+  cfg.returnUrl   = document.getElementById('cfg-url').value.trim() || location.href.split('?')[0];
+  cfg.binId       = document.getElementById('cfg-bin-id').value.trim();
+  cfg.binKey      = document.getElementById('cfg-bin-key').value.trim();
+  localStorage.setItem('bym-cfg', JSON.stringify(cfg));
+  updateCfgUI();
+  toast('✅ Config saved','All settings stored in your browser.',true);
+  document.getElementById('cfg-body').classList.remove('open');
+}
+
+function updateCfgUI(){
+  const s = document.getElementById('cfg-status');
+  const allSet = cfg.merchantId && cfg.merchantKey && cfg.binId && cfg.binKey;
+  s.textContent = allSet ? '✓ READY' : '⚠ NOT SET';
+  s.className = allSet ? 'cfg-status-ok' : 'cfg-status-bad';
+  document.getElementById('cfg-mid').value    = cfg.merchantId;
+  document.getElementById('cfg-mkey').value   = cfg.merchantKey;
+  document.getElementById('cfg-pass').value   = cfg.passphrase;
+  document.getElementById('cfg-url').value    = cfg.returnUrl;
+  document.getElementById('cfg-bin-id').value = cfg.binId;
+  document.getElementById('cfg-bin-key').value= cfg.binKey;
+}
+
+function toggleCfg(){ document.getElementById('cfg-body').classList.toggle('open'); }
+
+// ─────────────────────────────────────────────
+// DATA — stored in JSONBin (works on GitHub Pages)
+// JSONBin is a free REST JSON store, perfect for static sites
+// ─────────────────────────────────────────────
+let cumData = [], sinData = [];
+
+const JSONBIN_URL = () => `https://api.jsonbin.io/v3/b/${cfg.binId}`;
+const JSONBIN_HEADERS = () => ({
+  'Content-Type': 'application/json',
+  'X-Master-Key': cfg.binKey,
+  'X-Bin-Versioning': 'false'
+});
+
+function setLoading(p){ // p = 0-100
+  const bar = document.getElementById('loading-bar');
+  bar.style.width = p + '%';
+  if(p >= 100) setTimeout(()=>{ bar.style.width='0'; }, 400);
+}
+
+async function fetchData(){
+  if(!cfg.binId || !cfg.binKey){
+    // no persistence configured — run in local-only mode
+    renderAll(); return;
+  }
+  setLoading(30);
+  try{
+    const r = await fetch(JSONBIN_URL(), { headers: JSONBIN_HEADERS() });
+    if(!r.ok) throw new Error('fetch failed '+r.status);
+    const j = await r.json();
+    const d = j.record || j;
+    cumData = d.cum || [];
+    sinData = d.sin || [];
+    setLoading(100);
+  }catch(e){
+    console.error('JSONBin read error:', e);
+    toast('⚠ Could not load leaderboard','Check your JSONBin config.',false,true);
+    setLoading(100);
+  }
   renderAll();
-  handleReturn();
 }
 
-async function save(){
-  try{await window.storage.set('bym-cum',JSON.stringify(cumData),true);}catch(e){}
-  try{await window.storage.set('bym-sin',JSON.stringify(sinData),true);}catch(e){}
+async function pushData(){
+  if(!cfg.binId || !cfg.binKey) return; // no persistence, fine
+  try{
+    await fetch(JSONBIN_URL(), {
+      method: 'PUT',
+      headers: JSONBIN_HEADERS(),
+      body: JSON.stringify({ cum: cumData, sin: sinData })
+    });
+  }catch(e){
+    console.error('JSONBin write error:', e);
+  }
 }
 
-// ── PAYFAST RETURN ────────────────────────────
-// After PayFast redirects back, URL contains bym_* params we encoded in return_url
-function handleReturn(){
-  const p=new URLSearchParams(location.search);
-  const status=p.get('bym_status'),name=p.get('bym_name'),
-        title=p.get('bym_title'),amount=parseFloat(p.get('bym_amount'));
-  if(status==='success'&&name&&amount>0){
-    addEntry(decodeURIComponent(name),decodeURIComponent(title||'Professional Money Burner'),amount);
-    history.replaceState({},'',location.pathname);
-    toast('🔥 Payment confirmed!',`R${amount.toLocaleString()} burned. Welcome to the leaderboard, ${decodeURIComponent(name)}.`,true);
+// ─────────────────────────────────────────────
+// PAYFAST RETURN HANDLER
+// ─────────────────────────────────────────────
+async function handleReturn(){
+  const p = new URLSearchParams(location.search);
+  const status = p.get('bym_status');
+  const name   = p.get('bym_name');
+  const title  = p.get('bym_title');
+  const amount = parseFloat(p.get('bym_amount'));
+  history.replaceState({}, '', location.pathname);
+
+  if(status === 'success' && name && amount > 0){
+    // Re-fetch fresh data first so we don't overwrite other entries
+    await fetchData();
+    addEntry(decodeURIComponent(name), decodeURIComponent(title || 'Professional Money Burner'), amount);
+    toast('🔥 Payment confirmed!', `R${amount.toLocaleString()} flexed. You\'re on the board, ${decodeURIComponent(name)}.`, true);
     confetti();
-  }else if(status==='cancel'){
-    history.replaceState({},'',location.pathname);
-    toast('Payment cancelled','Your money survived. For now.');
+  } else if(status === 'cancel'){
+    toast('Payment cancelled', 'Your money is safe. For now.');
   }
 }
 
-// ── ADD ENTRY ─────────────────────────────────
-function addEntry(name,title,amount){
-  // Cumulative
-  const ex=cumData.find(e=>e.name.toLowerCase()===name.toLowerCase());
-  if(ex){ex.amount+=amount;ex.title=title;ex.t=Date.now();ex.isNew=true;}
-  else cumData.push({name,amount,title,t:Date.now(),isNew:true});
-  cumData.sort((a,b)=>b.amount-a.amount);
-  // Single — every payment is its own record
-  sinData.push({name,amount,title,t:Date.now(),isNew:true});
-  sinData.sort((a,b)=>b.amount-a.amount);
-  save();renderAll();
-  setTimeout(()=>{cumData.forEach(e=>e.isNew=false);sinData.forEach(e=>e.isNew=false);},4000);
+// ─────────────────────────────────────────────
+// ADD ENTRY
+// ─────────────────────────────────────────────
+function addEntry(name, title, amount){
+  const now = Date.now();
+  // Cumulative — stacks per person
+  const ex = cumData.find(e => e.name.toLowerCase() === name.toLowerCase());
+  if(ex){ ex.amount += amount; ex.title = title; ex.t = now; ex.isNew = true; }
+  else cumData.push({ name, amount, title, t: now, isNew: true });
+  cumData.sort((a,b) => b.amount - a.amount);
+  // Single — every payment its own record
+  sinData.push({ name, amount, title, t: now, isNew: true });
+  sinData.sort((a,b) => b.amount - a.amount);
+  pushData();
+  renderAll();
+  setTimeout(() => {
+    cumData.forEach(e => e.isNew = false);
+    sinData.forEach(e => e.isNew = false);
+  }, 4000);
 }
 
-// ── PAYFAST FORM SUBMIT ───────────────────────
+// ─────────────────────────────────────────────
+// PAYFAST FORM SUBMIT
+// ─────────────────────────────────────────────
 function initBurn(){
-  const name=document.getElementById('name-input').value.trim();
-  const title=document.getElementById('title-sel').value;
-  if(!selAmount||selAmount<10){toast('🔥 Pick an amount','Minimum R10 to get on the board.');return;}
-  if(!name){toast('📛 Name required','The leaderboard needs to know who to judge.');return;}
+  const name  = document.getElementById('name-input').value.trim();
+  const title = document.getElementById('title-sel').value;
 
-  if(!pfc.merchantId||!pfc.merchantKey){
-    // DEMO MODE — no keys yet, add directly for testing
-    toast('⚠ Demo Mode','PayFast not configured — entry added directly for testing. Set your keys in the config panel.');
-    addEntry(name,title,selAmount);
-    resetForm();confetti();return;
+  if(!selAmount || selAmount < 10){ toast('🔥 Pick an amount','Min R10 to get on the board.'); return; }
+  if(!name){ toast('📛 Name required','The leaderboard needs to know who to crown.'); return; }
+
+  if(!cfg.merchantId || !cfg.merchantKey){
+    // Demo mode — no PayFast keys yet, add directly for testing
+    toast('⚠ Demo Mode','PayFast not configured — entry added for testing. Set your keys in ⚙ Config.');
+    addEntry(name, title, selAmount);
+    resetForm(); confetti(); return;
   }
 
-  // Build return URL with entry data so we can record it on redirect back
-  const base=pfc.returnUrl||location.href.split('?')[0];
-  const retUrl=`${base}?bym_status=success&bym_name=${encodeURIComponent(name)}&bym_title=${encodeURIComponent(title)}&bym_amount=${selAmount}`;
-  const canUrl=`${base}?bym_status=cancel`;
+  const base    = cfg.returnUrl || location.href.split('?')[0];
+  const retUrl  = `${base}?bym_status=success&bym_name=${encodeURIComponent(name)}&bym_title=${encodeURIComponent(title)}&bym_amount=${selAmount}`;
+  const canUrl  = `${base}?bym_status=cancel`;
 
-  const params={
-    merchant_id:      pfc.merchantId,
-    merchant_key:     pfc.merchantKey,
-    return_url:       retUrl,
-    cancel_url:       canUrl,
-    notify_url:       pfc.notifyUrl||'',
-    name_first:       name,
-    amount:           selAmount.toFixed(2),
-    item_name:        'BurnYourMoney Donation',
-    item_description: `Leaderboard entry for ${name}`,
-    custom_str1:      name,
-    custom_str2:      title,
+  const params = {
+    merchant_id:       cfg.merchantId,
+    merchant_key:      cfg.merchantKey,
+    return_url:        retUrl,
+    cancel_url:        canUrl,
+    notify_url:        '',
+    name_first:        name,
+    amount:            selAmount.toFixed(2),
+    item_name:         'BurnYourMoney Flex',
+    item_description:  `Leaderboard flex for ${name}`,
+    custom_str1:       name,
+    custom_str2:       title,
   };
 
-  // MD5 signature required by PayFast
-  let sigStr=Object.entries(params)
-    .filter(([,v])=>v!=='')
-    .map(([k,v])=>`${k}=${encodeURIComponent(v).replace(/%20/g,'+')}`)
+  let sigStr = Object.entries(params)
+    .filter(([,v]) => v !== '')
+    .map(([k,v]) => `${k}=${encodeURIComponent(v).replace(/%20/g,'+')}`)
     .join('&');
-  if(pfc.passphrase) sigStr+=`&passphrase=${encodeURIComponent(pfc.passphrase).replace(/%20/g,'+')}`;
-  const sig=md5(sigStr);
+  if(cfg.passphrase) sigStr += `&passphrase=${encodeURIComponent(cfg.passphrase).replace(/%20/g,'+')}`;
 
-  // Populate & submit the hidden form
-  document.getElementById('pf-mid').value  =params.merchant_id;
-  document.getElementById('pf-mkey').value =params.merchant_key;
-  document.getElementById('pf-ret').value  =params.return_url;
-  document.getElementById('pf-can').value  =params.cancel_url;
-  document.getElementById('pf-itn').value  =params.notify_url;
-  document.getElementById('pf-name').value =params.name_first;
-  document.getElementById('pf-amt').value  =params.amount;
-  document.getElementById('pf-item').value =params.item_name;
-  document.getElementById('pf-desc').value =params.item_description;
-  document.getElementById('pf-c1').value   =params.custom_str1;
-  document.getElementById('pf-c2').value   =params.custom_str2;
-  document.getElementById('pf-sig').value  =sig;
+  document.getElementById('pf-mid').value   = params.merchant_id;
+  document.getElementById('pf-mkey').value  = params.merchant_key;
+  document.getElementById('pf-ret').value   = params.return_url;
+  document.getElementById('pf-can').value   = params.cancel_url;
+  document.getElementById('pf-itn').value   = params.notify_url;
+  document.getElementById('pf-name').value  = params.name_first;
+  document.getElementById('pf-amt').value   = params.amount;
+  document.getElementById('pf-item').value  = params.item_name;
+  document.getElementById('pf-desc').value  = params.item_description;
+  document.getElementById('pf-c1').value    = params.custom_str1;
+  document.getElementById('pf-c2').value    = params.custom_str2;
+  document.getElementById('pf-sig').value   = md5(sigStr);
   document.getElementById('pf-form').submit();
 }
 
 function resetForm(){
-  document.getElementById('name-input').value='';
-  document.getElementById('custom-input').value='';
-  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('sel'));
-  document.getElementById('btn-amt').textContent='R0';
-  selAmount=0;
-  document.getElementById('roast').innerHTML='<strong>Gogo Thandiwe weighs in:</strong> Select an amount and she will have thoughts.';
+  document.getElementById('name-input').value = '';
+  document.getElementById('custom-input').value = '';
+  document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('sel'));
+  document.getElementById('btn-amt').textContent = 'R0';
+  selAmount = 0;
+  document.getElementById('roast').innerHTML = '<strong>Gogo Thandiwe\'s verdict:</strong> Select an amount and she will weigh in.';
 }
 
-// ── RENDER ────────────────────────────────────
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
 function renderAll(){
-  const total=cumData.reduce((s,e)=>s+e.amount,0);
-  const avg=cumData.length?Math.round(total/cumData.length):0;
-  const big=sinData[0]?.amount||0;
-  const top=cumData[0]?.name||'—';
-  document.getElementById('s-total').textContent='R'+total.toLocaleString();
-  document.getElementById('s-count').textContent=cumData.length;
-  document.getElementById('s-avg').textContent=avg?'R'+avg.toLocaleString():'R0';
-  document.getElementById('s-biggest').textContent=big?'R'+big.toLocaleString():'R0';
-  document.getElementById('s-top').textContent=top.length>10?top.slice(0,10)+'…':top;
-  document.getElementById('total-display').textContent='R'+total.toLocaleString();
-  renderLB('lb-cum',cumData.slice(0,10),false);
+  const total   = cumData.reduce((s,e) => s+e.amount, 0);
+  const avg     = cumData.length ? Math.round(total/cumData.length) : 0;
+  const biggest = sinData[0]?.amount || 0;
+  const topName = cumData[0]?.name || '—';
+
+  document.getElementById('s-total').textContent   = 'R'+total.toLocaleString();
+  document.getElementById('s-count').textContent   = cumData.length;
+  document.getElementById('s-avg').textContent     = avg ? 'R'+avg.toLocaleString() : 'R0';
+  document.getElementById('s-biggest').textContent = biggest ? 'R'+biggest.toLocaleString() : 'R0';
+  document.getElementById('s-top').textContent     = topName.length > 10 ? topName.slice(0,10)+'…' : topName;
+  document.getElementById('total-display').textContent = 'R'+total.toLocaleString();
+
+  renderLB('lb-cum', cumData.slice(0,10), false);
   renderHOS(cumData.slice(10));
-  renderLB('lb-sin',sinData.slice(0,10),true);
+  renderLB('lb-sin', sinData.slice(0,10), true);
+  renderToday();
 }
 
-function renderLB(id,data,isSin){
-  const el=document.getElementById(id);
-  if(!data.length){el.innerHTML=`<div class="empty-state"><span class="ei">🪣</span><p>${isSin?'No verified payments yet. Be the first.':'Nobody has burned anything yet. Be the first idiot.'}</p></div>`;return;}
-  const ri=['🥇','🥈','🥉'],rc=['gold','silver','bronze'];
-  el.innerHTML=data.map((e,i)=>{
-    const rank=i+1,top3=i<3;
-    const rankEl=top3?`<span class="lb-rank ${rc[i]}">${ri[i]}</span>`:`<span class="lb-rank">#${rank}</span>`;
-    const rClass=rank<=3?`rank-${rank}`:'';
-    const newBadge=e.isNew?'<span style="color:var(--green);font-size:10px;font-family:DM Mono">● NEW</span>':'';
-    const kBar=rank===1?`<div class="king-bar${isSin?' blue':''}"></div>`:'';
-    return`<div class="lb-entry ${rClass} ${isSin?'single':''} ${e.isNew?'is-new':''}">
-      ${rankEl}
+function renderLB(id, data, isSin){
+  const el = document.getElementById(id);
+  if(!data.length){
+    el.innerHTML = `<div class="empty-state"><span class="ei">🔥</span><p>${isSin ? 'No verified payments yet. Be the first to flex.' : 'Nobody on the board yet. Be the first.'}</p></div>`;
+    return;
+  }
+  const ri = ['🥇','🥈','🥉'], rc = ['gold','silver','bronze'];
+  el.innerHTML = data.map((e,i) => {
+    const rank = i+1, top3 = i < 3;
+    const rEl  = top3 ? `<span class="lb-rank ${rc[i]}">${ri[i]}</span>` : `<span class="lb-rank">#${rank}</span>`;
+    const rCls = rank <= 3 ? `rank-${rank}` : '';
+    const nb   = e.isNew ? '<span style="color:var(--green);font-size:10px;font-family:\'DM Mono\'">● NEW</span>' : '';
+    const kb   = rank === 1 ? `<div class="king-bar${isSin?' blue':''}"></div>` : '';
+    return `<div class="lb-entry ${rCls} ${isSin?'single':''} ${e.isNew?'is-new':''}">
+      ${rEl}
       <div>
-        <div class="lb-name">${esc(e.name)} ${newBadge} <span class="badge${isSin?' blue':''}">${esc(e.title)}</span></div>
-        <div class="lb-meta">${isSin?'Single donation · ':''}${ago(e.t)}</div>
+        <div class="lb-name">${esc(e.name)} ${nb} <span class="badge${isSin?' blue':''}">${esc(e.title)}</span></div>
+        <div class="lb-meta">${isSin?'Single · ':''}${ago(e.t)}</div>
       </div>
       <div class="lb-amount">
         <span class="amt${isSin?' blue':''}">R${e.amount.toLocaleString()}</span>
-        <span class="cur">${isSin?'one time':'total burned'}</span>
+        <span class="cur">${isSin?'one flex':'total flexed'}</span>
       </div>
-    </div>${kBar}`;
+    </div>${kb}`;
   }).join('');
 }
 
 function renderHOS(rest){
-  const el=document.getElementById('hos-cum');
-  const grid=document.getElementById('hos-cum-grid');
-  if(rest.length){el.style.display='block';grid.innerHTML=rest.map(e=>`<div class="hos-card"><span class="hcn">${esc(e.name)}</span><span class="hca">R${e.amount.toLocaleString()}</span></div>`).join('');}
-  else el.style.display='none';
+  const el   = document.getElementById('hos-cum');
+  const grid = document.getElementById('hos-cum-grid');
+  if(rest.length){
+    el.style.display = 'block';
+    grid.innerHTML = rest.map(e => `<div class="hos-card"><span class="hcn">${esc(e.name)}</span><span class="hca">R${e.amount.toLocaleString()}</span></div>`).join('');
+  } else { el.style.display = 'none'; }
 }
 
-// ── TAB ───────────────────────────────────────
-function switchTab(tab,btn){
-  document.querySelectorAll('.lb-tab').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.lb-panel').forEach(p=>p.classList.remove('active'));
+function renderToday(){
+  const dateEl = document.getElementById('today-date');
+  if(dateEl) dateEl.textContent = new Date().toLocaleDateString('en-ZA',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const el = document.getElementById('lb-tod');
+  if(!el) return;
+  const td = sinData.filter(e => isToday(e.t)).slice(0,10);
+  if(!td.length){
+    el.innerHTML = '<div class="empty-state"><span class="ei">🌅</span><p>No flexes yet today.<br>Be today\'s champion. Board resets at midnight.</p></div>';
+    return;
+  }
+  const ri = ['👑','🥈','🥉'], rc = ['gold','silver','bronze'];
+  el.innerHTML = td.map((e,i) => {
+    const rank = i+1, top3 = i < 3;
+    const rEl  = top3 ? `<span class="lb-rank ${rc[i]}">${ri[i]}</span>` : `<span class="lb-rank">#${rank}</span>`;
+    const rCls = rank <= 3 ? `rank-${rank}` : '';
+    const nb   = e.isNew ? '<span style="color:var(--green);font-size:10px">NEW</span>' : '';
+    const kb   = rank === 1 ? '<div class="king-bar blue"></div>' : '';
+    return `<div class="lb-entry single ${rCls} ${e.isNew?'is-new':''}">
+      ${rEl}
+      <div>
+        <div class="lb-name">${esc(e.name)} ${nb} <span class="badge blue">${esc(e.title)}</span></div>
+        <div class="lb-meta">Today · ${ago(e.t)}</div>
+      </div>
+      <div class="lb-amount">
+        <span class="amt blue">R${e.amount.toLocaleString()}</span>
+        <span class="cur">today's flex</span>
+      </div>
+    </div>${kb}`;
+  }).join('');
+}
+
+// ─────────────────────────────────────────────
+// TABS
+// ─────────────────────────────────────────────
+function switchTab(tab, btn){
+  document.querySelectorAll('.lb-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.lb-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('panel-'+tab).classList.add('active');
 }
 
-// ── AMOUNT UI ─────────────────────────────────
-const ROASTS={
-  50:"R50? Cute. Lunch money. The ancestors are barely awake.",
-  100:"R100. Respectable cowardice. Enough to feel something, not enough to regret it.",
-  250:"R250. Your parents worked hard for that. This is fine.",
-  500:"R500. You sat there and thought 'yes, this is the move.' Incredible.",
-  1000:"R1,000 into the void. No receipt. No product. Just vibes and a leaderboard spot.",
-  5000:"R5,000. Gogo needs to sit down. Five. Thousand. Rand. For a leaderboard spot. You need to be studied.",
+// ─────────────────────────────────────────────
+// AMOUNT UI
+// ─────────────────────────────────────────────
+let selAmount = 0;
+
+const ROASTS = {
+  50:   "R50. A confident start. The ancestors are watching and mildly impressed.",
+  100:  "R100. Now we're talking. You're in the game.",
+  250:  "R250. Boss energy. This is not your first rodeo.",
+  500:  "R500. Zero hesitation. Gogo respects the commitment.",
+  1000: "R1,000. A whole grand. Into the void. Certified baller behaviour.",
+  5000: "R5,000. Gogo is standing up. Five thousand rand. On a leaderboard. You are untouchable.",
 };
-function selAmt(v,btn){
-  selAmount=v;
-  document.getElementById('custom-input').value='';
-  document.getElementById('btn-amt').textContent='R'+v.toLocaleString();
-  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('sel'));
+
+function selAmt(v, btn){
+  selAmount = v;
+  document.getElementById('custom-input').value = '';
+  document.getElementById('btn-amt').textContent = 'R'+v.toLocaleString();
+  document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('sel'));
   btn.classList.add('sel');
   setRoast(v);
 }
 function custAmt(){
-  const v=parseInt(document.getElementById('custom-input').value);
-  document.querySelectorAll('.amt-btn').forEach(b=>b.classList.remove('sel'));
-  if(v>0){selAmount=v;document.getElementById('btn-amt').textContent='R'+v.toLocaleString();setRoast(v);}
-  else{selAmount=0;document.getElementById('btn-amt').textContent='R0';}
+  const v = parseInt(document.getElementById('custom-input').value);
+  document.querySelectorAll('.amt-btn').forEach(b => b.classList.remove('sel'));
+  if(v > 0){ selAmount=v; document.getElementById('btn-amt').textContent='R'+v.toLocaleString(); setRoast(v); }
+  else { selAmount=0; document.getElementById('btn-amt').textContent='R0'; }
 }
 function setRoast(v){
-  let m=ROASTS[v];
+  let m = ROASTS[v];
   if(!m){
-    if(v<50)m="That's barely anything. Are you okay?";
-    else if(v<250)m="Somewhere in between. The ancestors are mildly confused.";
-    else if(v<1000)m="Getting serious. Your financial advisor would not approve.";
-    else if(v<5000)m="Thousands on a joke website. Genuinely unwell behaviour.";
-    else m="Gogo has no words. She is just looking at you, slowly shaking her head.";
+    if(v < 50)   m = "Even a small flex counts. The board welcomes all.";
+    else if(v < 250) m = "Solid flex. The ancestors nod in approval.";
+    else if(v < 1000) m = "Now that is a statement. Well played.";
+    else if(v < 5000) m = "Thousands. On a leaderboard. For the love of the flex. Respect.";
+    else m = "Gogo has left the building. She needed a moment. Come back to that number.";
   }
-  document.getElementById('roast').innerHTML=`<strong>Gogo Thandiwe weighs in:</strong> ${m}`;
+  document.getElementById('roast').innerHTML = `<strong>Gogo Thandiwe's verdict:</strong> ${m}`;
 }
 
-// ── CONFIG ────────────────────────────────────
-function toggleCfg(){document.getElementById('cfg-body').classList.toggle('open');}
-function saveCfg(){
-  pfc.merchantId =document.getElementById('cfg-mid').value.trim();
-  pfc.merchantKey=document.getElementById('cfg-mkey').value.trim();
-  pfc.passphrase =document.getElementById('cfg-pass').value.trim();
-  pfc.returnUrl  =document.getElementById('cfg-url').value.trim()||location.href.split('?')[0];
-  localStorage.setItem('bym-pfc',JSON.stringify(pfc));
-  updateCfgUI();
-  toast('✅ Config saved','PayFast keys stored. Site is now live-ready.',true);
-  document.getElementById('cfg-body').classList.remove('open');
+// ─────────────────────────────────────────────
+// HELPERS
+// ─────────────────────────────────────────────
+function isToday(ts){
+  const d=new Date(ts),n=new Date();
+  return d.getFullYear()===n.getFullYear()&&d.getMonth()===n.getMonth()&&d.getDate()===n.getDate();
 }
-function updateCfgUI(){
-  const s=document.getElementById('cfg-status');
-  if(pfc.merchantId&&pfc.merchantKey){
-    s.textContent='✓ CONFIGURED';s.style.color='var(--green)';
-    document.getElementById('cfg-mid').value =pfc.merchantId;
-    document.getElementById('cfg-mkey').value=pfc.merchantKey;
-    document.getElementById('cfg-pass').value=pfc.passphrase;
-    document.getElementById('cfg-url').value =pfc.returnUrl;
-  }else{
-    s.textContent='⚠ NOT SET';s.style.color='var(--fire1)';
-    document.getElementById('cfg-url').value=location.href.split('?')[0];
-  }
+function msToMidnight(){ const n=new Date(),m=new Date(n); m.setHours(24,0,0,0); return m-n; }
+function countdownStr(){
+  let ms=msToMidnight();
+  const h=Math.floor(ms/3600000); ms-=h*3600000;
+  const m=Math.floor(ms/60000);   ms-=m*60000;
+  const s=Math.floor(ms/1000);
+  return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
 }
-
-// ── HELPERS ───────────────────────────────────
-function ago(ts){const d=Date.now()-ts,m=Math.floor(d/60000),h=Math.floor(d/3600000),dy=Math.floor(d/86400000);if(m<1)return'just now';if(m<60)return`${m}m ago`;if(h<24)return`${h}h ago`;return`${dy}d ago`;}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function toast(title,msg,ok=false){
-  const t=document.getElementById('toast');
-  document.getElementById('t-title').textContent=title;
-  document.getElementById('t-msg').textContent=msg;
-  t.className='toast'+(ok?' ok':'');t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),5500);
+function ago(ts){
+  const d=Date.now()-ts, m=Math.floor(d/60000), h=Math.floor(d/3600000), dy=Math.floor(d/86400000);
+  if(m<1)return'just now'; if(m<60)return`${m}m ago`; if(h<24)return`${h}h ago`; return`${dy}d ago`;
+}
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function toast(title, msg, ok=false, err=false){
+  const t = document.getElementById('toast');
+  document.getElementById('t-title').textContent = title;
+  document.getElementById('t-msg').textContent = msg;
+  t.className = 'toast' + (ok?' ok':'') + (err?' err':'');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 5500);
 }
 function confetti(){
   const cols=['#FF4500','#FF8C00','#FFD700','#FFF8DC','#FF6347'];
-  for(let i=0;i<60;i++)setTimeout(()=>{
-    const c=document.createElement('div');c.className='confetti-piece';
-    c.style.cssText=`left:${Math.random()*100}vw;top:0;width:8px;height:8px;background:${cols[Math.floor(Math.random()*cols.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s;border-radius:${Math.random()>.5?'50%':'0'};`;
-    document.body.appendChild(c);setTimeout(()=>c.remove(),3500);
-  },i*20);
+  for(let i=0;i<60;i++) setTimeout(()=>{
+    const c=document.createElement('div'); c.className='confetti-piece';
+    c.style.cssText=`left:${Math.random()*100}vw;top:0;width:8px;height:8px;background:${cols[~~(Math.random()*cols.length)]};animation-duration:${1.5+Math.random()*2}s;animation-delay:${Math.random()*.5}s;border-radius:${Math.random()>.5?'50%':'0'};`;
+    document.body.appendChild(c); setTimeout(()=>c.remove(),3500);
+  }, i*20);
 }
 
-// ── MD5 (PayFast signature) ───────────────────
+// ─────────────────────────────────────────────
+// MD5 (PayFast signature)
+// ─────────────────────────────────────────────
 function md5(s){function L(k,d){return(k<<d)|(k>>>(32-d))}function K(G,k){var I,d,F,H,x;F=(G&2147483648);H=(k&2147483648);I=(G&1073741824);d=(k&1073741824);x=(G&1073741823)+(k&1073741823);if(I&d){return(x^2147483648^F^H)}if(I|d){if(x&1073741824){return(x^3221225472^F^H)}else{return(x^1073741824^F^H)}}else{return(x^F^H)}}function r(d,F,k){return(d&F)|(~d&k)}function q(d,F,k){return(d&k)|(F&~k)}function p(d,F,k){return(d^F^k)}function n(d,F,k){return(F^(d|~k))}function u(G,F,aa,Z,k,H,I){G=K(G,K(K(r(F,aa,Z),k),I));return K(L(G,H),F)}function f(G,F,aa,Z,k,H,I){G=K(G,K(K(q(F,aa,Z),k),I));return K(L(G,H),F)}function D(G,F,aa,Z,k,H,I){G=K(G,K(K(p(F,aa,Z),k),I));return K(L(G,H),F)}function t(G,F,aa,Z,k,H,I){G=K(G,K(K(n(F,aa,Z),k),I));return K(L(G,H),F)}function e(G){var Z;var F=G.length;var x=F+8;var k=(x-(x%64))/64;var I=(k+1)*16;var aa=Array(I-1);var d=0;var H=0;while(H<F){Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=(aa[Z]|(G.charCodeAt(H)<<d));H++}Z=(H-(H%4))/4;d=(H%4)*8;aa[Z]=aa[Z]|(128<<d);aa[I-2]=F<<3;aa[I-1]=F>>>29;return aa}function B(x){var k="";var F="";var G,d;for(d=0;d<=3;d++){G=(x>>>(d*8))&255;F="0"+G.toString(16);k=k+F.substr(F.length-2,2)}return k}function J(k){k=k.replace(/\r\n/g,"\n");var d="";for(var F=0;F<k.length;F++){var x=k.charCodeAt(F);if(x<128){d+=String.fromCharCode(x)}else if((x>127)&&(x<2048)){d+=String.fromCharCode((x>>6)|192);d+=String.fromCharCode((x&63)|128)}else{d+=String.fromCharCode((x>>12)|224);d+=String.fromCharCode(((x>>6)&63)|128);d+=String.fromCharCode((x&63)|128)}}return d}var C=Array();var P,h,E,v,g,Y,X,W,V;var S=7,Q=12,N=17,M=22;var A=5,z=9,y=14,w=20;var o=4,m=11,l=16,j=23;var U=6,T=10,R=15,O=21;s=J(s);C=e(s);Y=1732584193;X=4023233417;W=2562383102;V=271733878;for(P=0;P<C.length;P+=16){h=Y;E=X;v=W;g=V;Y=u(Y,X,W,V,C[P+0],S,3614090360);V=u(V,Y,X,W,C[P+1],Q,3905402710);W=u(W,V,Y,X,C[P+2],N,606105819);X=u(X,W,V,Y,C[P+3],M,3250441966);Y=u(Y,X,W,V,C[P+4],S,4118548399);V=u(V,Y,X,W,C[P+5],Q,1200080426);W=u(W,V,Y,X,C[P+6],N,2821735955);X=u(X,W,V,Y,C[P+7],M,4249261313);Y=u(Y,X,W,V,C[P+8],S,1770035416);V=u(V,Y,X,W,C[P+9],Q,2336552879);W=u(W,V,Y,X,C[P+10],N,4294925233);X=u(X,W,V,Y,C[P+11],M,2304563134);Y=u(Y,X,W,V,C[P+12],S,1804603682);V=u(V,Y,X,W,C[P+13],Q,4254626195);W=u(W,V,Y,X,C[P+14],N,2792965006);X=u(X,W,V,Y,C[P+15],M,1236535329);Y=f(Y,X,W,V,C[P+1],A,4129170786);V=f(V,Y,X,W,C[P+6],z,3225465664);W=f(W,V,Y,X,C[P+11],y,643717713);X=f(X,W,V,Y,C[P+0],w,3921069994);Y=f(Y,X,W,V,C[P+5],A,3593408605);V=f(V,Y,X,W,C[P+10],z,38016083);W=f(W,V,Y,X,C[P+15],y,3634488961);X=f(X,W,V,Y,C[P+4],w,3889429448);Y=f(Y,X,W,V,C[P+9],A,568446438);V=f(V,Y,X,W,C[P+14],z,3275163606);W=f(W,V,Y,X,C[P+3],y,4107603335);X=f(X,W,V,Y,C[P+8],w,1163531501);Y=f(Y,X,W,V,C[P+13],A,2850285829);V=f(V,Y,X,W,C[P+2],z,4243563512);W=f(W,V,Y,X,C[P+7],y,1735328473);X=f(X,W,V,Y,C[P+12],w,2368359562);Y=D(Y,X,W,V,C[P+5],o,4294588738);V=D(V,Y,X,W,C[P+8],m,2272392833);W=D(W,V,Y,X,C[P+11],l,1839030562);X=D(X,W,V,Y,C[P+14],j,4259657740);Y=D(Y,X,W,V,C[P+1],o,2763975236);V=D(V,Y,X,W,C[P+4],m,1272893353);W=D(W,V,Y,X,C[P+7],l,4139469664);X=D(X,W,V,Y,C[P+10],j,3200236656);Y=D(Y,X,W,V,C[P+13],o,681279174);V=D(V,Y,X,W,C[P+0],m,3936430074);W=D(W,V,Y,X,C[P+3],l,3572445317);X=D(X,W,V,Y,C[P+6],j,76029189);Y=D(Y,X,W,V,C[P+9],o,3654602809);V=D(V,Y,X,W,C[P+12],m,3873151461);W=D(W,V,Y,X,C[P+15],l,530742520);X=D(X,W,V,Y,C[P+2],j,3299628645);Y=t(Y,X,W,V,C[P+0],U,4096336452);V=t(V,Y,X,W,C[P+7],T,1126891415);W=t(W,V,Y,X,C[P+14],R,2878612391);X=t(X,W,V,Y,C[P+5],O,4237533241);Y=t(Y,X,W,V,C[P+12],U,1700485571);V=t(V,Y,X,W,C[P+3],T,2399980690);W=t(W,V,Y,X,C[P+10],R,4293915773);X=t(X,W,V,Y,C[P+1],O,2240044497);Y=t(Y,X,W,V,C[P+8],U,1873313359);V=t(V,Y,X,W,C[P+15],T,4264355552);W=t(W,V,Y,X,C[P+6],R,2734768916);X=t(X,W,V,Y,C[P+13],O,1309151649);Y=t(Y,X,W,V,C[P+4],U,4149444226);V=t(V,Y,X,W,C[P+11],T,3174756917);W=t(W,V,Y,X,C[P+2],R,718787259);X=t(X,W,V,Y,C[P+9],O,3951481745);Y=K(Y,h);X=K(X,E);W=K(W,v);V=K(V,g)}return(B(Y)+B(X)+B(W)+B(V)).toLowerCase()}
 
-// ── EMBERS ────────────────────────────────────
+// ─────────────────────────────────────────────
+// EMBERS
+// ─────────────────────────────────────────────
 (function(){
-  const el=document.getElementById('embers'),cols=['#FF4500','#FF8C00','#FFD700','#FF6347'];
+  const el=document.getElementById('embers'), cols=['#FF4500','#FF8C00','#FFD700','#FF6347'];
   for(let i=0;i<25;i++){
-    const e=document.createElement('div');e.className='ember';
-    e.style.cssText=`left:${Math.random()*100}vw;bottom:0;background:${cols[Math.floor(Math.random()*cols.length)]};--drift:${(Math.random()-.5)*200}px;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*8}s;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;`;
+    const e=document.createElement('div'); e.className='ember';
+    e.style.cssText=`left:${Math.random()*100}vw;bottom:0;background:${cols[~~(Math.random()*cols.length)]};--drift:${(Math.random()-.5)*200}px;animation-duration:${8+Math.random()*12}s;animation-delay:${Math.random()*8}s;width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;`;
     el.appendChild(e);
   }
 })();
 
-load();
+// ─────────────────────────────────────────────
+// BOOT
+// ─────────────────────────────────────────────
+loadCfg();
+fetchData().then(() => handleReturn());
+
+// countdown ticker
+setInterval(() => {
+  const el = document.getElementById('today-cd');
+  if(el) el.innerHTML = 'Board resets in: <strong style="color:var(--fire2)">' + countdownStr() + '</strong>';
+}, 1000);
+
+// auto-refresh at midnight
+setTimeout(() => renderAll(), msToMidnight() + 1500);
 </script>
 </body>
 </html>
